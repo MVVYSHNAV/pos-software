@@ -23,6 +23,8 @@ wheels/
 tags
 MANIFEST
 
+/tridz_pos/public/pos
+
 # Environments
 .env
 .venv
