@@ -3,10 +3,29 @@ import type { Item } from "@/types/item"
 
 export async function getItems(_priceList: string) {
   return await db.getDocList<Item>("Item", {
-    fields: ["name", "item_name", "stock_uom"],
+    fields: [
+      "name",
+      "item_code",
+      "item_name",
+      "item_group",
+      "stock_uom",
+      "image",
+      "standard_rate",
+      "description"
+    ],
     filters: [
       ["disabled", "=", 0],
       ["is_sales_item", "=", 1],
+    ],
+    limit: 500,
+  })
+}
+
+export async function getItemGroups() {
+  return await db.getDocList("Item Group", {
+    fields: ["name", "parent_item_group"],
+    filters: [
+      ["is_group", "=", 0],
     ],
     limit: 100,
   })
