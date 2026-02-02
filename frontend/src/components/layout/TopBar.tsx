@@ -1,7 +1,8 @@
 import { Input } from "@/components/ui/input"
 import { ScanLine } from "lucide-react"
 import { useItemsStore } from "@/store/itemsStore"
-import { Settings, User } from "lucide-react"
+import { Settings } from "lucide-react"
+import { UserProfile } from "./UserProfile"
 
 export function TopBar() {
   const { searchTerm, setSearchTerm } = useItemsStore()
@@ -35,7 +36,7 @@ export function TopBar() {
           <span className="text-sm text-muted-foreground">Online</span>
         </div>
         <Settings className="h-5 w-5 text-muted-foreground cursor-pointer" />
-        <User className="h-5 w-5 text-muted-foreground cursor-pointer" />
+        <UserProfile />
       </div>
     </div>
   )

@@ -6,16 +6,21 @@ import { ItemGrid } from "@/components/items/ItemGrid"
 import { CartPanel } from "@/components/cart/CartPanel"
 import { usePosStore } from "@/store/posStore"
 import { useItemsStore } from "@/store/itemsStore"
+import { useUserStore } from "@/store/userStore"
 
 
 export default function Pos() {
   const { boot, profile, loading: posLoading, error: posError } = usePosStore()
   const { fetchItems, fetchCategories, loading: itemsLoading, error: itemsError } = useItemsStore()
+  const { initSession } = useUserStore()
 
   useEffect(() => {
     const initialize = async () => {
       try {
-        await boot()
+        await Promise.all([
+          boot(),
+          initSession()
+        ])
       } catch (error) {
         console.error(" POS boot failed:", error)
       }
