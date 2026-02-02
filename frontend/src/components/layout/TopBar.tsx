@@ -1,46 +1,41 @@
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { ScanLine, UserRound } from "lucide-react"
+import { ScanLine } from "lucide-react"
 import { useItemsStore } from "@/store/itemsStore"
+import { Settings, User } from "lucide-react"
 
 export function TopBar() {
   const { searchTerm, setSearchTerm } = useItemsStore()
 
-
   return (
-    <div className="flex items-center justify-between border-b px-4 sm:px-6 py-3 bg-card">
-      <div className="font-semibold text-base sm:text-lg flex items-center gap-2">
-        <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
-          T
+    <div className="flex items-center justify-between border-b px-4 py-2 bg-background h-[60px]">
+      <div className="flex items-center gap-2">
+        <div className="bg-[#52796F] rounded p-1">
+          <span className="font-bold text-white text-xs px-1">TP</span>
         </div>
-        <span className="hidden sm:inline">Tridz POS</span>
+        <span className="font-semibold text-lg text-[#52796F]">Tridz POS</span>
       </div>
 
-      <div className="flex-1 max-w-md mx-4 hidden md:block">
+      <div className="flex-1 max-w-2xl mx-8">
         <div className="relative">
           <Input
             placeholder="Search items by name or code..."
-            className="w-full pr-10"
+            className="w-full pr-10 h-10 border-gray-300"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Button
-            size="icon"
-            variant="ghost"
-            className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-
-          >
-            <ScanLine className="h-4 w-4 text-muted-foreground" />
-          </Button>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            <ScanLine className="h-4 w-4" />
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 sm:gap-4">
-        <span className="text-xs sm:text-sm text-green-600 flex items-center gap-1">
-          <span className="h-2 w-2 rounded-full bg-green-600"></span>
-          <span className="hidden sm:inline">Online</span>
-        </span>
-        <UserRound className="h-8 w-8 rounded-full bg-white border-2" />
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-green-500"></span>
+          <span className="text-sm text-muted-foreground">Online</span>
+        </div>
+        <Settings className="h-5 w-5 text-muted-foreground cursor-pointer" />
+        <User className="h-5 w-5 text-muted-foreground cursor-pointer" />
       </div>
     </div>
   )

@@ -5,7 +5,7 @@ export interface Item {
   item_group: string
   stock_uom: string
   image?: string
-  standard_rate?: number
-  actual_qty?: number
+  standard_rate: number
+  actual_qty: number
   description?: string
 }

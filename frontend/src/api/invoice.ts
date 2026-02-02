@@ -15,6 +15,7 @@ export async function createInvoice(data: {
     pos_profile: data.pos_profile,
     items: data.items,
     payments: data.payments,
+    update_stock: 1,
   })
 
   return invoice

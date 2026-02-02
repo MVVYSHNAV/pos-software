@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { X, Plus, Minus } from "lucide-react"
+import { Trash2, Plus, Minus } from "lucide-react"
 
 interface CartItemProps {
     item_code: string
@@ -12,6 +12,7 @@ interface CartItemProps {
 }
 
 export function CartItem({
+    item_code,
     item_name,
     qty,
     rate,
@@ -22,52 +23,58 @@ export function CartItem({
     const total = qty * rate
 
     return (
-        <div className="flex items-start justify-between py-3 border-b last:border-0">
-            <div className="flex-1 space-y-1">
-                <div className="text-sm font-medium line-clamp-2 pr-2">
+        <div className="bg-gray-50/50 rounded-lg p-3 mb-2 border border-transparent hover:border-gray-200 transition-colors">
+            {/* Header: Name & Delete */}
+            <div className="flex justify-between items-start mb-1">
+                <h4 className="font-medium text-sm text-gray-900 line-clamp-2 pr-2">
                     {item_name}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                    ₹{rate.toFixed(2)} x {qty}
-                </div>
+                </h4>
+                <button
+                    onClick={onRemove}
+                    className="text-red-400 hover:text-red-500 hover:bg-red-50 p-1 rounded transition-colors"
+                >
+                    <Trash2 className="h-4 w-4" />
+                </button>
             </div>
 
-            <div className="flex flex-col items-end gap-2">
-                <div className="font-semibold text-sm">
-                    ₹{total.toFixed(2)}
+            {/* Sub-header: Code & Unit Price */}
+            <div className="text-xs text-muted-foreground mb-3">
+                <div className="uppercase tracking-wide text-[10px] text-gray-500 font-medium mb-0.5">
+                    {item_code}
                 </div>
+                <div>₹{Math.floor(rate)} each</div>
+            </div>
 
+            {/* Controls Row */}
+            <div className="flex justify-between items-center">
+                {/* Stepper */}
                 <div className="flex items-center gap-1">
                     <Button
                         variant="outline"
                         size="icon"
-                        className="h-6 w-6"
+                        className="h-8 w-8 bg-white border-gray-200 text-gray-500 hover:text-gray-700"
                         onClick={onReduce}
                     >
                         <Minus className="h-3 w-3" />
                     </Button>
 
-                    <span className="text-xs w-6 text-center font-medium">
+                    <div className="h-8 w-10 flex items-center justify-center bg-white border border-gray-200 rounded text-sm font-medium text-gray-700">
                         {qty}
-                    </span>
+                    </div>
 
                     <Button
                         variant="outline"
                         size="icon"
-                        className="h-6 w-6"
+                        className="h-8 w-8 bg-white border-gray-200 text-gray-500 hover:text-gray-700"
                         onClick={onAdd}
                     >
                         <Plus className="h-3 w-3" />
                     </Button>
+                </div>
 
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10 ml-1"
-                        onClick={onRemove}
-                    >
-                        <X className="h-3 w-3" />
-                    </Button>
+                {/* Total Price */}
+                <div className="font-bold text-base text-[#416864]"> {/* Using a custom teal shade matching screenshot */}
+                    ₹{total.toFixed(2)}
                 </div>
             </div>
         </div>

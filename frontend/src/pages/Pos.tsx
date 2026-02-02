@@ -1,16 +1,16 @@
 import { useEffect } from "react"
-import PageShell from "@/components/layout/PageShell"
+
 import { TopBar } from "@/components/layout/TopBar"
 import { CategoryBar } from "@/components/layout/CategoryBar"
 import { ItemGrid } from "@/components/items/ItemGrid"
 import { CartPanel } from "@/components/cart/CartPanel"
 import { usePosStore } from "@/store/posStore"
 import { useItemsStore } from "@/store/itemsStore"
-import { InvoiceTab } from "@/components/layout/InvoiceTab"
+
 
 export default function Pos() {
   const { boot, profile, loading: posLoading, error: posError } = usePosStore()
-  const { fetchItems, fetchCategories, items, loading: itemsLoading, error: itemsError } = useItemsStore()
+  const { fetchItems, fetchCategories, loading: itemsLoading, error: itemsError } = useItemsStore()
 
   useEffect(() => {
     const initialize = async () => {
@@ -42,54 +42,42 @@ export default function Pos() {
     loadData()
   }, [profile, fetchItems, fetchCategories])
 
-  // Debug logging
-  console.log(" POS State:", {
-    profile,
-    posLoading,
-    posError,
-    itemsCount: items.length,
-    itemsLoading,
-    itemsError
-  })
-
   return (
-    <PageShell>
+    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden font-sans text-gray-900">
       <TopBar />
-      <div className="flex flex-col lg:flex-row">
-        <CategoryBar />
-        <InvoiceTab />
-      </div>
 
+      {/* Main Content Area */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Side: Categories & grid */}
+        <div className="flex-1 flex flex-col min-w-0 bg-white mr-[1px]"> {/* mr-px for divider effect */}
+          <CategoryBar />
 
-      {/* Error Display */}
-      {(posError || itemsError) && (
-        <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 mx-6 mt-4 rounded">
-          <p className="font-semibold">Error:</p>
-          <p>{posError || itemsError}</p>
-        </div>
-      )}
+          <div className="flex-1 overflow-y-auto bg-gray-50/30 p-4">
+            {/* Error Display */}
+            {(posError || itemsError) && (
+              <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 mb-4 rounded">
+                <p className="font-semibold">Error:</p>
+                <p>{posError || itemsError}</p>
+              </div>
+            )}
 
-      {/* Loading Display */}
-      {(posLoading || itemsLoading) && (
-        <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">Loading POS data...</p>
-        </div>
-      )}
+            {/* Loading Display */}
+            {(posLoading || itemsLoading) && (
+              <div className="flex items-center justify-center h-64">
+                <p className="text-muted-foreground">Loading POS data...</p>
+              </div>
+            )}
 
-      <div className="flex flex-col lg:flex-row h-[calc(100vh-120px)]">
-        <div className="flex-1 overflow-y-auto">
-          <ItemGrid />
-        </div>
-
-        <div className="hidden lg:flex lg:h-full">
-          <CartPanel />
+            {!posLoading && !itemsLoading && <ItemGrid />}
+          </div>
         </div>
 
-        {/* Mobile cart - could be implemented as a bottom sheet or modal later */}
-        <div className="lg:hidden border-t">
+        {/* Right Side: Cart */}
+        <div className="w-[400px] bg-white border-l h-full flex flex-col shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.05)] z-10">
+          {/* Note: CartPanel content is self-contained */}
           <CartPanel />
         </div>
       </div>
-    </PageShell>
+    </div>
   )
 }

@@ -2,26 +2,23 @@ import { useCartStore } from "@/store/cartStore"
 
 export function CartSummary() {
   const subtotal = useCartStore(state => state.subtotal)
-
-  // Assuming 18% tax as per the static design
-  const tax = subtotal * 0.18
+  const tax = 0.00
   const grandTotal = subtotal + tax
 
   return (
-    <div className="border-t pt-4 space-y-3 text-sm">
-      <div className="flex justify-between text-muted-foreground">
+    <div className="border-t pt-4 space-y-2 text-sm text-emerald-950/80">
+      <div className="flex justify-between">
         <span>Subtotal:</span>
         <span>₹{subtotal.toFixed(2)}</span>
       </div>
-
-      <div className="flex justify-between text-muted-foreground">
+      <div className="flex justify-between">
         <span>Tax (18%):</span>
         <span>₹{tax.toFixed(2)}</span>
       </div>
 
-      <div className="flex justify-between font-bold text-base pt-2 border-t">
+      <div className="flex justify-between font-bold text-lg pt-2 border-t text-emerald-950">
         <span>Grand Total:</span>
-        <span>₹{grandTotal.toFixed(2)}</span>
+        <span className="text-[#416864]">₹{grandTotal.toFixed(2)}</span>
       </div>
     </div>
   )

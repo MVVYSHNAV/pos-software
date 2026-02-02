@@ -39,10 +39,10 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
         try {
             const groups = await getItemGroups()
             const categoryNames = groups.map((g: any) => g.name)
-            set({ categories: ["All Items", ...categoryNames] })
+            set({ categories: categoryNames })
         } catch (e: any) {
             console.error("Failed to fetch categories:", e)
-            set({ categories: ["All Items"] })
+            set({ categories: [] })
         }
     },
 
