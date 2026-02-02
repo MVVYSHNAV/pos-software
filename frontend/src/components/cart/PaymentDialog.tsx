@@ -100,7 +100,7 @@ export function PaymentDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[600px] p-0 gap-0 overflow-hidden">
+            <DialogContent className="sm:max-w-4xl p-0 gap-0 overflow-hidden">
                 <div className="p-6 pb-2">
                     <DialogHeader className="mb-4">
                         <DialogTitle className="text-xl">Checkout</DialogTitle>
@@ -124,9 +124,9 @@ export function PaymentDialog({
                     </div>
 
                     {/* Payment Modes */}
-                    <div className="space-y-2 mb-6">
+                    <div className="space-y-3 mb-6">
                         <Label className="text-sm font-semibold text-foreground/80">Payment Mode</Label>
-                        <div className="grid grid-cols-3 gap-4 top-2">
+                        <div className="grid grid-cols-3 gap-4 top-2 py-2">
                             {profile.payments.slice(0, 3).map((p) => (
                                 <button
                                     key={p.mode_of_payment}
@@ -154,7 +154,7 @@ export function PaymentDialog({
                     {/* Amount Input */}
                     <div className="space-y-2 mb-4">
                         <Label className="text-sm font-semibold text-foreground/80">Amount Collected from Customer</Label>
-                        <div className="relative">
+                        <div className="relative py-2">
                             <Input
                                 type="number"
                                 value={amount}
@@ -165,7 +165,7 @@ export function PaymentDialog({
                     </div>
 
                     {/* Quick Amounts */}
-                    <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+                    <div className="flex gap-2 mb-4 overflow-x-auto p-2 scrollbar-hide">
                         <Button variant="outline" size="sm" onClick={setExact} className="whitespace-nowrap">
                             Exact Amount
                         </Button>

@@ -6,8 +6,19 @@ import { usePosStore } from "@/store/posStore"
 import { CartItem } from "./CartItem"
 import { PaymentDialog } from "./PaymentDialog"
 import { useToast } from "@/hooks/use-toast"
+import { CircleCheck } from "lucide-react"
 
 import { OrderTabs } from "./OrderTabs"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 export function CartPanel() {
   const { addItem, removeItem, reduceItem, clearCart, newOrder } = useCartStore()
@@ -17,6 +28,22 @@ export function CartPanel() {
   const { toast } = useToast()
 
   const [isPaymentOpen, setIsPaymentOpen] = useState(false)
+  const [itemToRemove, setItemToRemove] = useState<string | null>(null)
+
+  const confirmRemoval = () => {
+    if (itemToRemove) {
+      removeItem(itemToRemove)
+      toast({
+        description: (
+          <div className="flex items-center gap-2">
+            <CircleCheck className="h-4 w-4 text-green-600" />
+            <span>Successfully removed from cart</span>
+          </div>
+        ),
+      })
+      setItemToRemove(null)
+    }
+  }
 
 
   const totalItems = items.reduce((sum, item) => sum + item.qty, 0)
@@ -41,8 +68,12 @@ export function CartPanel() {
       await new Promise(resolve => setTimeout(resolve, 500))
 
       toast({
-        title: "Order Complete",
-        description: "Order processed successfully",
+        description: (
+          <div className="flex items-center gap-2">
+            <CircleCheck className="h-4 w-4 text-green-600" />
+            <span>Order processed successfully</span>
+          </div>
+        ),
       })
 
       clearCart()
@@ -91,7 +122,7 @@ export function CartPanel() {
                     rate: item.rate
                   })}
                   onReduce={() => reduceItem(item.item_code)}
-                  onRemove={() => removeItem(item.item_code)}
+                  onRemove={() => setItemToRemove(item.item_code)}
                 />
               ))}
             </div>
@@ -116,6 +147,26 @@ export function CartPanel() {
         total={subtotal}
         onConfirm={handlePaymentSubmit}
       />
+
+      <AlertDialog open={!!itemToRemove} onOpenChange={(open: boolean) => !open && setItemToRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Item?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove this item from the cart?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={confirmRemoval}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
