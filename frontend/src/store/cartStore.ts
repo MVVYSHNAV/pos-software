@@ -8,45 +8,94 @@ interface CartItem {
 }
 
 interface CartState {
+  orderNumber: number
   items: CartItem[]
   subtotal: number
 
   addItem: (item: Omit<CartItem, "qty">) => void
   removeItem: (itemCode: string) => void
-  clear: () => void
+  reduceItem: (itemCode: string) => void
+  clearCart: () => void
+  newOrder: () => void
 }
 
-export const useCartStore = create<CartState>((set, get) => ({
+export const useCartStore = create<CartState>((set) => ({
+  orderNumber: 1,
   items: [],
   subtotal: 0,
 
   addItem: (item) => {
-    const items = [...get().items]
-    const existing = items.find(i => i.item_code === item.item_code)
+    console.log("Adding item to cart:", item)
+    set((state) => {
+      const items = [...state.items]
+      const existingIndex = items.findIndex(i => i.item_code === item.item_code)
 
-    if (existing) {
-      existing.qty += 1
-    } else {
-      items.push({ ...item, qty: 1 })
-    }
+      if (existingIndex > -1) {
+        items[existingIndex] = {
+          ...items[existingIndex],
+          qty: items[existingIndex].qty + 1
+        }
+      } else {
+        items.push({ ...item, qty: 1 })
+      }
 
-    const subtotal = items.reduce(
-      (sum, i) => sum + i.qty * i.rate,
-      0
-    )
+      const subtotal = items.reduce(
+        (sum, i) => sum + i.qty * i.rate,
+        0
+      )
 
-    set({ items, subtotal })
+      console.log("New cart state:", { items, subtotal })
+      return { items, subtotal }
+    })
   },
 
   removeItem: (itemCode) => {
-    const items = get().items.filter(i => i.item_code !== itemCode)
-    const subtotal = items.reduce(
-      (sum, i) => sum + i.qty * i.rate,
-      0
-    )
-
-    set({ items, subtotal })
+    set((state) => {
+      const items = state.items.filter(i => i.item_code !== itemCode)
+      const subtotal = items.reduce(
+        (sum, i) => sum + i.qty * i.rate,
+        0
+      )
+      return { items, subtotal }
+    })
   },
 
-  clear: () => set({ items: [], subtotal: 0 }),
+  reduceItem: (itemCode) => {
+    set((state) => {
+      const items = [...state.items]
+      const existingIndex = items.findIndex(i => i.item_code === itemCode)
+
+      if (existingIndex > -1) {
+        if (items[existingIndex].qty > 1) {
+          items[existingIndex] = {
+            ...items[existingIndex],
+            qty: items[existingIndex].qty - 1
+          }
+        } else {
+          items.splice(existingIndex, 1)
+        }
+      }
+
+      const subtotal = items.reduce(
+        (sum, i) => sum + i.qty * i.rate,
+        0
+      )
+
+      return { items, subtotal }
+    })
+  },
+
+  clearCart: () => {
+    set({
+      items: [],
+      subtotal: 0,
+    })
+  },
+
+  newOrder: () =>
+    set(state => ({
+      orderNumber: state.orderNumber + 1,
+      items: [],
+      subtotal: 0,
+    })),
 }))

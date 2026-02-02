@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import type { Item } from "@/types/item"
 import { useCartStore } from "@/store/cartStore"
+import { Plus } from "lucide-react"
 
 interface ItemCardProps {
   item: Item
@@ -56,9 +57,9 @@ export function ItemCard({ item }: ItemCardProps) {
             size="icon"
             className="h-8 w-8 sm:h-9 sm:w-9 rounded-full"
             onClick={handleAddToCart}
-            disabled={stockQty <= 0}
+          // disabled={stockQty <= 0}
           >
-            +
+            <Plus />
           </Button>
         </div>
       </div>

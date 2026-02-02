@@ -6,6 +6,7 @@ import { ItemGrid } from "@/components/items/ItemGrid"
 import { CartPanel } from "@/components/cart/CartPanel"
 import { usePosStore } from "@/store/posStore"
 import { useItemsStore } from "@/store/itemsStore"
+import { InvoiceTab } from "@/components/layout/InvoiceTab"
 
 export default function Pos() {
   const { boot, profile, loading: posLoading, error: posError } = usePosStore()
@@ -54,7 +55,11 @@ export default function Pos() {
   return (
     <PageShell>
       <TopBar />
-      <CategoryBar />
+      <div className="flex flex-col lg:flex-row">
+        <CategoryBar />
+        <InvoiceTab />
+      </div>
+
 
       {/* Error Display */}
       {(posError || itemsError) && (

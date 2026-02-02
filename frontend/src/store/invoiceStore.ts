@@ -3,16 +3,12 @@ import { createInvoice, submitInvoice } from "@/api/invoice"
 import { useCartStore } from "./cartStore"
 import { usePosStore } from "./posStore"
 
-interface InvoiceState {
-  submit: () => Promise<void>
-}
-
-export const useInvoiceStore = create<InvoiceState>(() => ({
+export const useInvoiceStore = create(() => ({
   submit: async () => {
     const cart = useCartStore.getState()
     const pos = usePosStore.getState()
 
-    if (!pos.profile) return
+    if (!pos.profile || cart.items.length === 0) return
 
     const invoice = await createInvoice({
       customer: "Walk In Customer",
@@ -32,6 +28,7 @@ export const useInvoiceStore = create<InvoiceState>(() => ({
     })
 
     await submitInvoice(invoice.name)
-    cart.clear()
+
+    cart.newOrder()
   },
 }))
