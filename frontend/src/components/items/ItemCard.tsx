@@ -61,7 +61,7 @@ export function ItemCard({ item }: ItemCardProps) {
             <Info className="h-4 w-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
             <Button
               size="icon"
-              className="h-7 w-7 rounded-full bg-[#526471] hover:bg-[#43535e] shadow-sm"
+              className="h-7 w-7 rounded-full bg-[#52796F] hover:bg-[#43535e] shadow-sm"
               onClick={handleAddToCart}
             >
               <Plus className="h-4 w-4" />

@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { CartSummary } from "./CartSummary"
 import { Button } from "@/components/ui/button"
-import { useCartStore } from "@/store/cartStore"
+import { useCartStore, selectSubtotal } from "@/store/cartStore"
 import { usePosStore } from "@/store/posStore"
 import { CartItem } from "./CartItem"
 import { PaymentDialog } from "./PaymentDialog"
@@ -11,7 +11,8 @@ import type { Payment } from "@/types/invoice"
 import { Plus } from "lucide-react"
 
 export function CartPanel() {
-  const { items, addItem, removeItem, reduceItem, clearCart, orderNumber, newOrder, subtotal } = useCartStore()
+  const { items, addItem, removeItem, reduceItem, clearCart, orderNumber, newOrder } = useCartStore()
+  const subtotal = useCartStore(selectSubtotal)
   const { profile } = usePosStore()
   const { toast } = useToast()
 

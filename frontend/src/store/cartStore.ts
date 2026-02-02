@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { persist, createJSONStorage } from "zustand/middleware"
 
 interface CartItem {
   item_code: string
@@ -10,92 +11,84 @@ interface CartItem {
 interface CartState {
   orderNumber: number
   items: CartItem[]
-  subtotal: number
 
   addItem: (item: Omit<CartItem, "qty">) => void
-  removeItem: (itemCode: string) => void
   reduceItem: (itemCode: string) => void
+  removeItem: (itemCode: string) => void
   clearCart: () => void
   newOrder: () => void
 }
 
-export const useCartStore = create<CartState>((set) => ({
-  orderNumber: 1,
-  items: [],
-  subtotal: 0,
+export const useCartStore = create<CartState>()(
+  persist(
+    (set) => ({
+      orderNumber: 1,
+      items: [],
 
-  addItem: (item) => {
-    console.log("Adding item to cart:", item)
-    set((state) => {
-      const items = [...state.items]
-      const existingIndex = items.findIndex(i => i.item_code === item.item_code)
+      addItem: (item) =>
+        set(state => {
+          const items = [...state.items]
+          const idx = items.findIndex(
+            i => i.item_code === item.item_code
+          )
 
-      if (existingIndex > -1) {
-        items[existingIndex] = {
-          ...items[existingIndex],
-          qty: items[existingIndex].qty + 1
-        }
-      } else {
-        items.push({ ...item, qty: 1 })
-      }
-
-      const subtotal = items.reduce(
-        (sum, i) => sum + i.qty * i.rate,
-        0
-      )
-
-      console.log("New cart state:", { items, subtotal })
-      return { items, subtotal }
-    })
-  },
-
-  removeItem: (itemCode) => {
-    set((state) => {
-      const items = state.items.filter(i => i.item_code !== itemCode)
-      const subtotal = items.reduce(
-        (sum, i) => sum + i.qty * i.rate,
-        0
-      )
-      return { items, subtotal }
-    })
-  },
-
-  reduceItem: (itemCode) => {
-    set((state) => {
-      const items = [...state.items]
-      const existingIndex = items.findIndex(i => i.item_code === itemCode)
-
-      if (existingIndex > -1) {
-        if (items[existingIndex].qty > 1) {
-          items[existingIndex] = {
-            ...items[existingIndex],
-            qty: items[existingIndex].qty - 1
+          if (idx > -1) {
+            items[idx] = {
+              ...items[idx],
+              qty: items[idx].qty + 1,
+            }
+          } else {
+            items.push({ ...item, qty: 1 })
           }
-        } else {
-          items.splice(existingIndex, 1)
-        }
-      }
 
-      const subtotal = items.reduce(
-        (sum, i) => sum + i.qty * i.rate,
-        0
-      )
+          return { items }
+        }),
 
-      return { items, subtotal }
-    })
-  },
+      reduceItem: (itemCode) =>
+        set(state => {
+          const items = [...state.items]
+          const idx = items.findIndex(
+            i => i.item_code === itemCode
+          )
 
-  clearCart: () => {
-    set({
-      items: [],
-      subtotal: 0,
-    })
-  },
+          if (idx > -1) {
+            if (items[idx].qty > 1) {
+              items[idx] = {
+                ...items[idx],
+                qty: items[idx].qty - 1,
+              }
+            } else {
+              items.splice(idx, 1)
+            }
+          }
 
-  newOrder: () =>
-    set(state => ({
-      orderNumber: state.orderNumber + 1,
-      items: [],
-      subtotal: 0,
-    })),
-}))
+          return { items }
+        }),
+
+      removeItem: (itemCode) =>
+        set(state => ({
+          items: state.items.filter(
+            i => i.item_code !== itemCode
+          ),
+        })),
+
+      clearCart: () =>
+        set({
+          items: [],
+        }),
+
+      newOrder: () =>
+        set(state => ({
+          orderNumber: state.orderNumber + 1,
+          items: [],
+        })),
+    }),
+    {
+      name: "tridz-pos-cart",
+      storage: createJSONStorage(() => sessionStorage),
+    }
+  )
+)
+
+export const selectSubtotal = (state: CartState) =>
+  state.items.reduce((sum, item) => sum + (item.qty * item.rate), 0)

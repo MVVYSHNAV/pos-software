@@ -1,7 +1,7 @@
-import { useCartStore } from "@/store/cartStore"
+import { useCartStore, selectSubtotal } from "@/store/cartStore"
 
 export function CartSummary() {
-  const subtotal = useCartStore(state => state.subtotal)
+  const subtotal = useCartStore(selectSubtotal)
   const tax = 0.00
   const grandTotal = subtotal + tax
 

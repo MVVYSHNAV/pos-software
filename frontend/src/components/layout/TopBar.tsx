@@ -15,7 +15,7 @@ export function TopBar() {
         <span className="font-semibold text-lg text-[#52796F]">Tridz POS</span>
       </div>
 
-      <div className="flex-1 max-w-2xl mx-8">
+      <div className="flex-1 max-w-xl mx-8">
         <div className="relative">
           <Input
             placeholder="Search items by name or code..."

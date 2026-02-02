@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { createInvoice, submitInvoice } from "@/api/invoice"
-import { useCartStore } from "./cartStore"
+import { useCartStore, selectSubtotal } from "./cartStore"
 import { usePosStore } from "./posStore"
 
 export const useInvoiceStore = create(() => ({
@@ -22,7 +22,7 @@ export const useInvoiceStore = create(() => ({
       payments: [
         {
           mode_of_payment: pos.profile.payments[0].mode_of_payment,
-          amount: cart.subtotal,
+          amount: selectSubtotal(cart),
         },
       ],
     })
