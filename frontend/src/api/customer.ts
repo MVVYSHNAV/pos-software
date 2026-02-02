@@ -16,3 +16,12 @@ export async function createCustomer(data: { customer_name: string; mobile_no?: 
     ...data,
   })
 }
+
+export async function getCustomerByMobile(mobile: string) {
+  const docs = await db.getDocList<Customer>(DOCTYPES.CUSTOMER, {
+    fields: ["name", "customer_name", "mobile_no"],
+    filters: [["mobile_no", "=", mobile]],
+    limit: 1,
+  })
+  return docs[0]
+}

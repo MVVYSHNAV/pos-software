@@ -14,8 +14,9 @@ import { usePosStore } from "@/store/posStore"
 import type { Payment } from "@/types/invoice"
 import { Search, Banknote, Smartphone, CreditCard, Printer, User, ChevronDown, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getCustomers, createCustomer } from "@/api/customer"
+import { getCustomers, createCustomer, getCustomerByMobile } from "@/api/customer"
 import type { Customer } from "@/types/customer"
+import { useToast } from "@/hooks/use-toast"
 
 interface PaymentDialogProps {
     open: boolean
@@ -30,6 +31,7 @@ export function PaymentDialog({
     total,
     onConfirm,
 }: PaymentDialogProps) {
+    const { toast } = useToast()
     const { profile } = usePosStore()
     const [amount, setAmount] = useState<string>("")
     const [selectedMode, setSelectedMode] = useState<string>("")
@@ -66,9 +68,6 @@ export function PaymentDialog({
                 setProcessing(false)
                 return
             }
-
-            // If tendered amount is greater than total, we record the total as payment
-            // and the rest is change. If less, we record logic as partial?
             const amountToRecord = payAmount >= total ? total : payAmount
 
             const payments: Payment[] = [{
@@ -90,6 +89,20 @@ export function PaymentDialog({
 
         try {
             setIsCreating(true)
+
+            // Check if customer already exists
+            const existing = await getCustomerByMobile(customerMobile)
+            if (existing) {
+                toast({
+                    title: "Customer Exists",
+                    description: `Customer with mobile ${customerMobile} already exists: ${existing.customer_name}`,
+                })
+                setSelectedCustomer(existing)
+                setIsAddingCustomer(false)
+                setNewCustomerName("")
+                return
+            }
+
             const newCustomer = await createCustomer({
                 customer_name: newCustomerName,
                 mobile_no: customerMobile
@@ -105,6 +118,11 @@ export function PaymentDialog({
             setNewCustomerName("")
         } catch (error) {
             console.error("Failed to create customer", error)
+            toast({
+                title: "Error",
+                description: "Failed to create customer record",
+                variant: "destructive",
+            })
         } finally {
             setIsCreating(false)
         }
