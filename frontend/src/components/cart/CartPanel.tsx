@@ -5,9 +5,8 @@ import { useCartStore, selectSubtotal } from "@/store/cartStore"
 import { usePosStore } from "@/store/posStore"
 import { CartItem } from "./CartItem"
 import { PaymentDialog } from "./PaymentDialog"
-import { createInvoice, submitInvoice, updateInvoice } from "@/api/invoice"
 import { useToast } from "@/hooks/use-toast"
-import type { Payment } from "@/types/invoice"
+
 import { Plus } from "lucide-react"
 
 export function CartPanel() {
@@ -17,46 +16,17 @@ export function CartPanel() {
   const { toast } = useToast()
 
   const [isPaymentOpen, setIsPaymentOpen] = useState(false)
-  const [currentInvoice, setCurrentInvoice] = useState<string | null>(null)
+
 
   const totalItems = items.reduce((sum, item) => sum + item.qty, 0)
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (items.length === 0) return
-
-    try {
-      const invoice = await createInvoice({
-        customer: "Cash Customer",
-        company: profile?.company || "",
-        pos_profile: profile?.name || "",
-        items: items.map(i => ({
-          item_code: i.item_code,
-          qty: i.qty,
-          rate: i.rate
-        })),
-        payments: []
-      })
-
-      setCurrentInvoice(invoice.name)
-
-      toast({
-        title: "Draft Created",
-        description: `Invoice ${invoice.name} saved as Draft. Proceed to payment.`,
-      })
-
-      setIsPaymentOpen(true)
-    } catch (error: any) {
-      console.error("Failed to create draft:", error)
-      toast({
-        title: "Error",
-        description: "Failed to create draft invoice",
-        variant: "destructive",
-      })
-    }
+    setIsPaymentOpen(true)
   }
 
-  const handlePaymentSubmit = async (payments: Payment[]) => {
-    if (!profile || !currentInvoice) {
+  const handlePaymentSubmit = async () => {
+    if (!profile) {
       toast({
         title: "Error",
         description: "Session lost or invalid state",
@@ -66,29 +36,25 @@ export function CartPanel() {
     }
 
     try {
-      await updateInvoice(currentInvoice, {
-        payments
-      })
-
-      const submitted = await submitInvoice(currentInvoice)
+      // Simulate successful checkout
+      await new Promise(resolve => setTimeout(resolve, 500))
 
       toast({
         title: "Order Complete",
-        description: `Invoice ${submitted.name} submitted successfully`,
+        description: "Order processed successfully",
       })
 
       clearCart()
       newOrder()
-      setCurrentInvoice(null)
+      setIsPaymentOpen(false)
 
     } catch (error: any) {
       console.error("Checkout failed:", error)
       toast({
         title: "Checkout Failed",
-        description: error.message || "Failed to submit invoice",
+        description: "Failed to process order",
         variant: "destructive",
       })
-      throw error // Re-throw to let dialog handle it if needed
     }
   }
 
