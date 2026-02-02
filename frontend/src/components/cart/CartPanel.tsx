@@ -7,6 +7,8 @@ import { CartItem } from "./CartItem"
 import { PaymentDialog } from "./PaymentDialog"
 import { useToast } from "@/hooks/use-toast"
 import { CircleCheck } from "lucide-react"
+import { useInvoiceStore } from "@/store/invoiceStore"
+import { createDraftPOSInvoice } from "@/api/invoice"
 
 import { OrderTabs } from "./OrderTabs"
 import {
@@ -21,11 +23,12 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export function CartPanel() {
-  const { addItem, removeItem, reduceItem, clearCart, newOrder } = useCartStore()
+  const { addItem, removeItem, reduceItem, clearCart, newOrder, } = useCartStore()
   const items = useCartStore(selectActiveItems)
   const subtotal = useCartStore(selectSubtotal)
-  const { profile } = usePosStore()
+  const { profile, openingEntry } = usePosStore()
   const { toast } = useToast()
+  const setDraftInvoice = useInvoiceStore(s => s.setDraftInvoice)
 
   const [isPaymentOpen, setIsPaymentOpen] = useState(false)
   const [itemToRemove, setItemToRemove] = useState<string | null>(null)
@@ -46,6 +49,7 @@ export function CartPanel() {
   }
 
 
+
   const totalItems = items.reduce((sum, item) => sum + item.qty, 0)
 
   const handleCheckout = () => {
@@ -53,7 +57,7 @@ export function CartPanel() {
     setIsPaymentOpen(true)
   }
 
-  const handlePaymentSubmit = async () => {
+  const handlePaymentSubmit = async (payments: any[]) => {
     if (!profile) {
       toast({
         title: "Error",
@@ -64,8 +68,21 @@ export function CartPanel() {
     }
 
     try {
-      // Simulate successful checkout
-      await new Promise(resolve => setTimeout(resolve, 500))
+      // Create draft invoice
+      const invoice = await createDraftPOSInvoice({
+        customer: profile.customer || "Walk In Customer",
+        company: profile.company,
+        pos_profile: profile.name,
+        pos_opening_entry: openingEntry?.name || "",
+        currency: profile.currency,
+        warehouse: profile.warehouse,
+        items: items as any,
+        payments,
+      })
+
+      if (invoice?.name) {
+        setDraftInvoice(invoice.name)
+      }
 
       toast({
         description: (
@@ -84,7 +101,7 @@ export function CartPanel() {
       console.error("Checkout failed:", error)
       toast({
         title: "Checkout Failed",
-        description: "Failed to process order",
+        description: error.message || "Failed to process order",
         variant: "destructive",
       })
     }
@@ -147,6 +164,7 @@ export function CartPanel() {
         total={subtotal}
         onConfirm={handlePaymentSubmit}
       />
+
 
       <AlertDialog open={!!itemToRemove} onOpenChange={(open: boolean) => !open && setItemToRemove(null)}>
         <AlertDialogContent>

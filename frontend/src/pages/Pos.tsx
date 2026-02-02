@@ -7,10 +7,11 @@ import { CartPanel } from "@/components/cart/CartPanel"
 import { usePosStore } from "@/store/posStore"
 import { useItemsStore } from "@/store/itemsStore"
 import { useUserStore } from "@/store/userStore"
+import { OpeningEntryError } from "@/components/layout/OpeningEntryError"
 
 
 export default function Pos() {
-  const { boot, profile, loading: posLoading, error: posError } = usePosStore()
+  const { loadProfile, profile, loading: posLoading, error: posError } = usePosStore()
   const { fetchItems, fetchCategories, loading: itemsLoading, error: itemsError } = useItemsStore()
   const { initSession } = useUserStore()
 
@@ -18,15 +19,15 @@ export default function Pos() {
     const initialize = async () => {
       try {
         await Promise.all([
-          boot(),
+          loadProfile(),
           initSession()
         ])
       } catch (error) {
-        console.error(" POS boot failed:", error)
+        console.error(" POS initialization failed:", error)
       }
     }
     initialize()
-  }, [boot])
+  }, [loadProfile])
 
   useEffect(() => {
     const loadData = async () => {
@@ -46,6 +47,10 @@ export default function Pos() {
     }
     loadData()
   }, [profile, fetchItems, fetchCategories])
+
+  if (posError && posError.includes("POS Opening Entry not found")) {
+    return <OpeningEntryError error={posError} />
+  }
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 overflow-hidden font-sans text-gray-900">

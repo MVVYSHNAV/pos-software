@@ -1,32 +1,29 @@
+// src/api/pos.ts
 import { db } from "./frappe"
+import { DOCTYPES } from "@/constants/doctypes"
 import type { POSProfile } from "@/types/pos"
 
 /**
- * Get POS Profile assigned to user
+ * Get POS Profile assigned to current user
  */
 export async function getPOSProfile(): Promise<POSProfile> {
-  const profiles = await db.getDocList<POSProfile>("POS Profile", {
-    fields: [
-      "name",
-      "company",
-      "currency",
-      "selling_price_list",
-    ],
+  const profiles = await db.getDocList<POSProfile>(DOCTYPES.POS_PROFILE, {
+    fields: ["name"],
     limit: 1,
   })
 
   if (!profiles.length) {
-    throw new Error("No POS Profile found")
+    throw new Error("No POS Profile found for user")
   }
 
-  return await db.getDoc("POS Profile", profiles[0].name)
+  return await db.getDoc(DOCTYPES.POS_PROFILE, profiles[0].name)
 }
 
 /**
- * Check if POS Opening Entry exists for today
+ * Get open POS Opening Entry
  */
 export async function getOpeningEntry(posProfile: string) {
-  const entries = await db.getDocList("POS Opening Entry", {
+  const entries = await db.getDocList(DOCTYPES.POS_OPENING_ENTRY, {
     filters: [
       ["pos_profile", "=", posProfile],
       ["status", "=", "Open"],

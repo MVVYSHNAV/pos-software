@@ -19,25 +19,27 @@ export const useUserStore = create<UserState>((set) => ({
         try {
             set({ loading: true, error: null })
             const userId = await getLoggedUser()
+
             // Check for valid user and ensure it's not the guest user
-            if (userId && userId !== "Guest") {
-                const userDetails = await getUserDetails(userId)
-                set({ currentUser: userDetails, loading: false })
-            } else {
-                set({ loading: false, error: "No user logged in" })
+            if (!userId || userId === "Guest") {
+                // Redirect to Frappe login page
+                window.location.href = "/login"
+                return
             }
+
+            const userDetails = await getUserDetails(userId)
+            set({ currentUser: userDetails, loading: false })
         } catch (e: any) {
             console.error("Failed to init user session:", e)
-            set({ error: e.message || "Failed to fetch user session", loading: false })
+            // If authentication fails, redirect to login
+            window.location.href = "/login"
         }
     },
 
     logout: async () => {
-        try {
-            await logout()
-            set({ currentUser: null })
-        } catch (e) {
-            console.error("Logout failed:", e)
-        }
+        // Clear local state first
+        set({ currentUser: null, loading: false, error: null })
+        // Call logout API which will redirect to login page
+        await logout()
     },
 }))

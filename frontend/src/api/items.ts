@@ -1,9 +1,10 @@
 import { db } from "./frappe"
 import type { Item } from "@/types/item"
+import { DOCTYPES } from "@/constants/doctypes"
 
 export async function getItems(priceList: string) {
   const [items, prices, bins] = await Promise.all([
-    db.getDocList<Item>("Item", {
+    db.getDocList<Item>(DOCTYPES.ITEM, {
       fields: [
         "name",
         "item_code",
@@ -19,14 +20,14 @@ export async function getItems(priceList: string) {
       ],
       limit: 500,
     }),
-    db.getDocList("Item Price", {
+    db.getDocList(DOCTYPES.ITEM_PRICE, {
       fields: ["item_code", "price_list_rate"],
       filters: [
         ["price_list", "=", priceList],
       ],
       limit: 1000,
     }),
-    db.getDocList("Bin", {
+    db.getDocList(DOCTYPES.BIN, {
       fields: ["item_code", "actual_qty"],
       limit: 1000,
     })
@@ -48,7 +49,7 @@ export async function getItems(priceList: string) {
 }
 
 export async function getItemGroups() {
-  return await db.getDocList("Item Group", {
+  return await db.getDocList(DOCTYPES.ITEM_GROUP, {
     fields: ["name", "parent_item_group"],
     filters: [
       ["is_group", "=", 0],
@@ -58,7 +59,7 @@ export async function getItemGroups() {
 }
 
 export async function getItemPrice(itemCode: string, priceList: string) {
-  const prices = await db.getDocList("Item Price", {
+  const prices = await db.getDocList(DOCTYPES.ITEM_PRICE, {
     fields: ["price_list_rate"],
     filters: [
       ["item_code", "=", itemCode],

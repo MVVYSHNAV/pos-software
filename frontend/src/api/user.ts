@@ -1,4 +1,5 @@
 import { db, frappe } from "./frappe"
+import { DOCTYPES } from "@/constants/doctypes"
 
 export interface UserDetails {
     name: string
@@ -17,10 +18,13 @@ export async function getUserDetails(userId: string): Promise<UserDetails> {
     // If userId is not provided or invalid, return basic info or throw
     if (!userId) throw new Error("User ID is required")
 
-    const user = await db.getDoc<UserDetails>("User", userId)
+    const user = await db.getDoc<UserDetails>(DOCTYPES.USER, userId)
     return user
 }
 
-export async function logout(): Promise<void> {
-    window.location.href = "/login"
+export function logout(): void {
+    // 1. Clear frontend-only state
+    sessionStorage.clear()
+    localStorage.clear()
+    window.location.href = "/logout"
 }

@@ -4,8 +4,22 @@ export interface POSProfile {
   currency: string
   selling_price_list: string
   warehouse: string
+  customer?: string
   payments: {
     mode_of_payment: string
     default: number
+  }[]
+}
+
+export interface POSOpeningEntry {
+  name: string
+  pos_profile: string
+  period_start_date: string
+  status: string
+  company: string
+  pos_closing_entry?: string
+  balance_details?: {
+    mode_of_payment: string
+    opening_amount: number
   }[]
 }

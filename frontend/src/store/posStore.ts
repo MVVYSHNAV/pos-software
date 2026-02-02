@@ -1,14 +1,14 @@
 import { create } from "zustand"
-import type { POSProfile } from "@/types/pos"
+import type { POSProfile, POSOpeningEntry } from "@/types/pos"
 import { getPOSProfile, getOpeningEntry } from "@/api/pos"
 
 interface PosState {
   profile: POSProfile | null
-  openingEntry: any | null
+  openingEntry: POSOpeningEntry | null
   loading: boolean
   error: string | null
 
-  boot: () => Promise<void>
+  loadProfile: () => Promise<void>
 }
 
 export const usePosStore = create<PosState>((set) => ({
@@ -17,15 +17,16 @@ export const usePosStore = create<PosState>((set) => ({
   loading: false,
   error: null,
 
-  boot: async () => {
+  loadProfile: async () => {
     try {
-      set({ loading: true })
+      set({ loading: true, error: null })
 
       const profile = await getPOSProfile()
       const opening = await getOpeningEntry(profile.name)
 
       if (!opening) {
-        throw new Error("POS Opening Entry not found")
+        sessionStorage.clear()
+        throw new Error("POS Opening Entry not found. Please create a POS Opening Entry first.")
       }
 
       set({
