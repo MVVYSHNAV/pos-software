@@ -8,7 +8,7 @@ export async function createInvoice(data: {
   items: SalesInvoiceItem[]
   payments: Payment[]
 }) {
-  const invoice = await db.createDoc("Sales Invoice", {
+  const invoice = await db.createDoc("POS Invoice", {
     is_pos: 1,
     customer: data.customer,
     company: data.company,
@@ -23,4 +23,8 @@ export async function createInvoice(data: {
 
 export async function submitInvoice(invoice: any) {
   return await db.submit(invoice)
+}
+
+export async function updateInvoice(name: string, data: any) {
+  return await db.updateDoc("POS Invoice", name, data)
 }
