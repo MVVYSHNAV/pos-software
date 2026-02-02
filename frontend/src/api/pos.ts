@@ -1,4 +1,3 @@
-// src/api/pos.ts
 import { db } from "./frappe"
 import { DOCTYPES } from "@/constants/doctypes"
 import type { POSProfile } from "@/types/pos"

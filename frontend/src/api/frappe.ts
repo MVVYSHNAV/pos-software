@@ -1,13 +1,9 @@
 import { FrappeApp } from "frappe-js-sdk"
 
-// Frappe SDK instance - uses session cookies automatically
-export const frappe = new FrappeApp(window.location.origin, {
-    useToken: true,
-    // @ts-ignore
-    type: "token",
-    // @ts-ignore
-    token: () => window.csrf_token || null
-})
+const frappe = new FrappeApp(import.meta.env.VITE_FRAPPE_BASE_URL);
 
+
+// IMPORTANT: these are OBJECTS, not functions
 export const db = frappe.db()
 export const call = frappe.call()
+export const auth = frappe.auth()

@@ -1,4 +1,4 @@
-import { db, frappe } from "./frappe"
+import { db, auth } from "./frappe"
 import { DOCTYPES } from "@/constants/doctypes"
 
 export interface UserDetails {
@@ -10,7 +10,7 @@ export interface UserDetails {
 }
 
 export async function getLoggedUser(): Promise<string> {
-    const result = await frappe.auth().getLoggedInUser()
+    const result = await auth.getLoggedInUser()
     return result
 }
 

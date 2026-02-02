@@ -1,5 +1,6 @@
 import { db } from "@/api/frappe"
 import type { SalesInvoiceItem, Payment } from "@/types/invoice"
+import { DOCTYPES } from "@/constants/doctypes"
 
 export async function createDraftPOSInvoice(data: {
     customer: string
@@ -11,8 +12,8 @@ export async function createDraftPOSInvoice(data: {
     items: SalesInvoiceItem[]
     payments: Payment[]
 }) {
-    return await db.createDoc("Sales Invoice", {
-        doctype: "Sales Invoice",
+    return await db.createDoc(DOCTYPES.SALES_INVOICE, {
+        doctype: DOCTYPES.SALES_INVOICE,
         is_pos: 1,
         customer: data.customer,
         company: data.company,
