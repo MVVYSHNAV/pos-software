@@ -1,16 +1,17 @@
 import { useState } from "react"
 import { CartSummary } from "./CartSummary"
 import { Button } from "@/components/ui/button"
-import { useCartStore, selectSubtotal } from "@/store/cartStore"
+import { useCartStore, selectSubtotal, selectActiveItems } from "@/store/cartStore"
 import { usePosStore } from "@/store/posStore"
 import { CartItem } from "./CartItem"
 import { PaymentDialog } from "./PaymentDialog"
 import { useToast } from "@/hooks/use-toast"
 
-import { Plus } from "lucide-react"
+import { OrderTabs } from "./OrderTabs"
 
 export function CartPanel() {
-  const { items, addItem, removeItem, reduceItem, clearCart, orderNumber, newOrder } = useCartStore()
+  const { addItem, removeItem, reduceItem, clearCart, newOrder } = useCartStore()
+  const items = useCartStore(selectActiveItems)
   const subtotal = useCartStore(selectSubtotal)
   const { profile } = usePosStore()
   const { toast } = useToast()
@@ -60,17 +61,7 @@ export function CartPanel() {
 
   return (
     <div className="w-full lg:w-[400px] border-l flex flex-col bg-background h-full shadow-sm">
-      {/* Order Tabs */}
-      <div className="flex border-b pl-2 pt-2 bg-muted/20">
-        <div className="px-4 py-2 bg-background border-t border-x rounded-t-lg text-sm font-medium border-b-0 -mb-[1px] cursor-default text-emerald-900">
-          Order #{orderNumber}
-          {/* <span className="text-muted-foreground ml-1">({totalItems})</span> */}
-        </div>
-        <button className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground flex items-center gap-1" onClick={newOrder}>
-          <Plus className="h-3 w-3" />
-          New Order
-        </button>
-      </div>
+      <OrderTabs />
 
       <div className="p-4 lg:p-6 flex flex-col h-full">
         <div className="mb-6">

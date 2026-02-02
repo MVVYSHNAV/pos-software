@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { useCartStore } from "@/store/cartStore"
 
 export function InvoiceTab() {
-  const orderNumber = useCartStore(state => state.orderNumber)
+  const orderNumber = useCartStore(state => state.activeOrderId)
   const newOrder = useCartStore(state => state.newOrder)
 
   return (
