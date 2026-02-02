@@ -19,7 +19,8 @@ export const useUserStore = create<UserState>((set) => ({
         try {
             set({ loading: true, error: null })
             const userId = await getLoggedUser()
-            if (userId) {
+            // Check for valid user and ensure it's not the guest user
+            if (userId && userId !== "Guest") {
                 const userDetails = await getUserDetails(userId)
                 set({ currentUser: userDetails, loading: false })
             } else {

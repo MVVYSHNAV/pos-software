@@ -14,13 +14,13 @@ export function UserProfile() {
 
     // Fallback for user name if not loaded or available
     const userName = currentUser?.full_name || currentUser?.name || "Guest User"
-    const userRole = "POS User" // This could be dynamic if we had role info, hardcoded for now based on screenshot
+    const userRole = currentUser?.roles?.[0]?.role || "POS User"
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="focus:outline-none">
-                    <User className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors hover:bg-[#52796F] hover:text-white rounded-full" />
+                <button className="focus:outline-none w-10 h-10 rounded-full hover:bg-[#52796F] flex items-center justify-center transition-colors group">
+                    <User className="h-5 w-5 text-muted-foreground group-hover:text-white transition-colors" />
                 </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>

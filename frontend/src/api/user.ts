@@ -1,15 +1,15 @@
-import { call, db } from "./frappe"
+import { db, frappe } from "./frappe"
 
 export interface UserDetails {
     name: string
     email: string
     full_name: string
     user_image?: string
-    roles?: string[]
+    roles?: { role: string }[]
 }
 
 export async function getLoggedUser(): Promise<string> {
-    const result = await call.get("frappe.auth.get_logged_user")
+    const result = await frappe.auth().getLoggedInUser()
     return result
 }
 
@@ -22,6 +22,5 @@ export async function getUserDetails(userId: string): Promise<UserDetails> {
 }
 
 export async function logout(): Promise<void> {
-    await call.post("logout")
-    window.location.reload()
+    window.location.href = "/login"
 }
