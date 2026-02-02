@@ -94,7 +94,9 @@ export function PaymentDialog({
     }
 
     const currentAmount = parseFloat(amount) || 0
-    const changeAmount = currentAmount > total ? currentAmount - total : 0
+    const balance = currentAmount - total
+    const isChange = balance >= 0
+    const displayAmount = Math.abs(balance)
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -174,11 +176,18 @@ export function PaymentDialog({
                         ))}
                     </div>
 
-                    {/* Change Return - Conditional Display */}
-                    {changeAmount > 0 && (
-                        <div className="bg-green-50 border-green-200 border rounded-lg p-4 flex justify-between items-center mb-2 animate-in fade-in slide-in-from-top-2">
-                            <span className="text-green-800 font-semibold">Balance to Return:</span>
-                            <span className="text-green-800 font-bold text-xl">₹{changeAmount.toFixed(2)}</span>
+                    {/* Balance/Change Display */}
+                    {Math.abs(currentAmount - total) > 0.01 && (
+                        <div className={cn(
+                            "border rounded-lg p-4 flex justify-between items-center mb-2 animate-in fade-in slide-in-from-top-2",
+                            isChange ? "bg-green-50 border-green-200" : "bg-orange-50 border-orange-200"
+                        )}>
+                            <span className={cn("font-semibold", isChange ? "text-green-800" : "text-orange-800")}>
+                                {isChange ? "Change to Return:" : "Balance Due:"}
+                            </span>
+                            <span className={cn("font-bold text-xl", isChange ? "text-green-800" : "text-orange-800")}>
+                                ₹{displayAmount.toFixed(2)}
+                            </span>
                         </div>
                     )}
                 </div>
