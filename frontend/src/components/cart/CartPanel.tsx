@@ -11,6 +11,7 @@ import { useInvoiceStore } from "@/store/invoiceStore"
 import { createDraftPOSInvoice } from "@/api/invoice"
 
 import { OrderTabs } from "./OrderTabs"
+import type { Customer } from "@/types/customer"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -57,7 +58,7 @@ export function CartPanel() {
     setIsPaymentOpen(true)
   }
 
-  const handlePaymentSubmit = async (payments: any[]) => {
+  const handlePaymentSubmit = async (payments: any[], customer?: Customer) => {
     if (!profile) {
       toast({
         title: "Error",
@@ -70,7 +71,7 @@ export function CartPanel() {
     try {
       // Create draft invoice
       const invoice = await createDraftPOSInvoice({
-        customer: profile.customer || "Walk In Customer",
+        customer: customer?.name || profile.customer || "Walk In Customer",
         company: profile.company,
         pos_profile: profile.name,
         pos_opening_entry: openingEntry?.name || "",
