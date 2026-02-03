@@ -2,10 +2,21 @@ import { db } from "./frappe"
 import type { Customer } from "@/types/customer"
 import { DOCTYPES } from "@/constants/doctypes"
 
-export async function getCustomers() {
+export async function getCustomers(query?: string) {
+  const filters: any[] = []
+
+  if (query) {
+    if (/^\d+$/.test(query)) {
+      filters.push(["mobile_no", "like", `%${query}%`])
+    } else {
+      filters.push(["customer_name", "like", `%${query}%`])
+    }
+  }
+
   return await db.getDocList<Customer>(DOCTYPES.CUSTOMER, {
     fields: ["name", "customer_name", "mobile_no"],
-    limit: 5,
+    filters,
+    limit: 10,
   })
 }
 

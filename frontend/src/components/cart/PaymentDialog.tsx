@@ -174,10 +174,15 @@ export function PaymentDialog({
                                 value={customerMobile}
                                 onFocus={() => setIsDropdownOpen(true)}
                                 onChange={(e) => {
-                                    setCustomerMobile(e.target.value)
-                                    if (selectedCustomer && selectedCustomer.mobile_no !== e.target.value) {
+                                    const value = e.target.value
+                                    setCustomerMobile(value)
+                                    if (selectedCustomer && selectedCustomer.mobile_no !== value) {
                                         setSelectedCustomer(undefined)
                                     }
+
+                                    // Debounce or just call for now (can optimize later if needed)
+                                    getCustomers(value).then(setCustomers)
+
                                     setIsDropdownOpen(true)
                                 }}
                             />
@@ -188,17 +193,13 @@ export function PaymentDialog({
                         </div>
 
                         {/* Customer Dropdown (Command Style) */}
-                        {isDropdownOpen && customers.length > 0 && (
+                        {isDropdownOpen && (
                             <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-lg shadow-xl max-h-60 overflow-y-auto animate-in fade-in zoom-in-95 duration-200 top-full">
                                 <div className="p-1">
                                     <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                        Recent Customers
+                                        SearchResults
                                     </div>
-                                    {customers.filter(c =>
-                                        !customerMobile ||
-                                        c.customer_name.toLowerCase().includes(customerMobile.toLowerCase()) ||
-                                        c.mobile_no?.includes(customerMobile)
-                                    ).map((c) => (
+                                    {customers.map((c) => (
                                         <button
                                             key={c.name}
                                             type="button"
@@ -229,15 +230,11 @@ export function PaymentDialog({
                                         </button>
                                     ))}
                                     {/* Empty State */}
-                                    {customers.filter(c =>
-                                        !customerMobile ||
-                                        c.customer_name.toLowerCase().includes(customerMobile.toLowerCase()) ||
-                                        c.mobile_no?.includes(customerMobile)
-                                    ).length === 0 && !isAddingCustomer && (
-                                            <div className="px-3 py-4 text-center text-sm text-muted-foreground">
-                                                No customers found matching "{customerMobile}"
-                                            </div>
-                                        )}
+                                    {customers.length === 0 && !isAddingCustomer && (
+                                        <div className="px-3 py-4 text-center text-sm text-muted-foreground">
+                                            No customers found matching "{customerMobile}"
+                                        </div>
+                                    )}
 
                                     {/* Always show Add New Customer button if not currently adding */}
                                     {!isAddingCustomer && (
