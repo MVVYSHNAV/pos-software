@@ -16,7 +16,7 @@ export async function getCustomers(query?: string) {
   return await db.getDocList<Customer>(DOCTYPES.CUSTOMER, {
     fields: ["name", "customer_name", "mobile_no"],
     filters,
-    limit: 10,
+    limit: 5,
   })
 }
 

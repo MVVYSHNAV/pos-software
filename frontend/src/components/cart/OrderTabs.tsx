@@ -27,8 +27,8 @@ export function OrderTabs() {
                                 closeOrder(order.id)
                             }}
                             className={cn(
-                                "h-5 w-5 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors opacity-0 group-hover:opacity-100",
-                                orders.length === 1 && "hidden"
+                                "h-5 w-5 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors text-muted-foreground hover:text-foreground",
+                                orders.length === 1
                             )}
                         >
                             <X className="h-3 w-3" />

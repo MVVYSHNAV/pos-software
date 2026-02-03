@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export function CartPanel() {
-  const { addItem, removeItem, reduceItem, clearCart, newOrder, } = useCartStore()
+  const { addItem, removeItem, reduceItem, newOrder, closeOrder, activeOrderId, orders } = useCartStore()
   const items = useCartStore(selectActiveItems)
   const subtotal = useCartStore(selectSubtotal)
   const { profile, openingEntry } = usePosStore()
@@ -94,8 +94,14 @@ export function CartPanel() {
         ),
       })
 
-      clearCart()
-      newOrder()
+      // Close the current order tab
+      if (orders.length === 1) {
+        newOrder()
+        closeOrder(activeOrderId)
+      } else {
+        closeOrder(activeOrderId)
+      }
+
       setIsPaymentOpen(false)
 
     } catch (error: any) {
