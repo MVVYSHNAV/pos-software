@@ -154,8 +154,8 @@ export function PaymentDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-4xl p-0 gap-0 overflow-hidden">
-                <div className="p-6 pb-2">
+            <DialogContent className="fixed z-50 flex flex-col w-full h-[100dvh] max-w-none rounded-none border-0 p-0 sm:h-auto sm:max-w-4xl sm:rounded-lg sm:border sm:gap-0 bg-background">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-2">
                     <DialogHeader className="mb-4">
                         <DialogTitle className="text-xl">Checkout</DialogTitle>
                         <DialogDescription>
@@ -165,12 +165,12 @@ export function PaymentDialog({
 
                     {/* Customer Mobile & Search */}
                     <div className="space-y-2 mb-6 relative">
-                        <Label className="text-sm font-semibold text-foreground/80">Customer</Label>
+                        <Label className="text-sm font-semibold text-foreground/80">Customer Mobile Number</Label>
                         <div className="relative top-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
-                                className="pl-9 bg-muted/30 h-11"
-                                placeholder="Search customer or enter mobile..."
+                                className="pl-9 bg-white h-11 border-[#52796F]/40 border-2 rounded-xl"
+                                placeholder="Enter 10-digit mobile number"
                                 value={customerMobile}
                                 onFocus={() => setIsDropdownOpen(true)}
                                 onChange={(e) => {
@@ -315,7 +315,7 @@ export function PaymentDialog({
                     {/* Payment Modes */}
                     <div className="space-y-3 mb-6">
                         <Label className="text-sm font-semibold text-foreground/80">Payment Mode</Label>
-                        <div className="grid grid-cols-3 gap-4 top-2 py-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 top-2 py-2">
                             {profile.payments.slice(0, 3).map((p) => (
                                 <button
                                     key={p.mode_of_payment}
@@ -323,7 +323,7 @@ export function PaymentDialog({
                                     className={cn(
                                         "flex flex-col items-center justify-center p-4 border rounded-xl transition-all h-24",
                                         selectedMode === p.mode_of_payment
-                                            ? "border-primary bg-primary/5 text-primary ring-1 ring-primary"
+                                            ? "border-[#52796F] bg-[#52796F]/5 text-[#52796F] ring-1 ring-[#52796F]"
                                             : "border-border hover:bg-muted/50 text-muted-foreground"
                                     )}
                                 >
@@ -381,12 +381,12 @@ export function PaymentDialog({
                     )}
                 </div>
 
-                <DialogFooter className="p-6 pt-2 bg-muted/5">
-                    <Button variant="outline" className="h-11 w-full" onClick={() => onOpenChange(false)} disabled={processing}>
+                <DialogFooter className="p-4 sm:p-6 pt-2 bg-muted/5 border-t sm:border-t-0 mt-auto">
+                    <Button variant="outline" className="h-12 sm:h-11 flex-1 sm:flex-none" onClick={() => onOpenChange(false)} disabled={processing}>
                         Cancel
                     </Button>
                     <Button
-                        className="h-11 w-full bg-emerald-700 hover:bg-emerald-800 text-white gap-2"
+                        className="h-12 sm:h-11 flex-[2] sm:flex-none bg-emerald-700 hover:bg-emerald-800 text-white gap-2"
                         onClick={handleConfirm}
                         disabled={processing || !selectedMode}
                     >

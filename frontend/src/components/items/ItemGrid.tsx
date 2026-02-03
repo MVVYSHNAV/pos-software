@@ -22,7 +22,7 @@ export function ItemGrid() {
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 p-4 sm:p-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-4 md:gap-6 p-4 md:p-10">
       {items.map((item) => (
         <ItemCard key={item.item_code} item={item} />
       ))}

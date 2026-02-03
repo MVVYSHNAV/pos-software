@@ -6,15 +6,15 @@ export function CategoryBar() {
   const { categories, selectedCategory, setCategory } = useItemsStore()
 
   return (
-    <div className="flex gap-2 px-4 py-3 bg-gray-50/50 overflow-x-auto border-b">
+    <div className="flex gap-2 px-4 py-3 bg-gray-50/50 overflow-x-auto border-b hide-scrollbar">
       <Button
         key="all"
         variant="ghost"
         className={cn(
-          "rounded-md px-4 py-1.5 h-auto text-sm font-medium transition-colors",
+          "rounded-lg px-4 py-1.5 md:px-4 md:py-1.5 h-auto text-sm md:text-sm font-semibold transition-all whitespace-nowrap",
           selectedCategory === "All Items"
-            ? "bg-[#52796F] text-white hover:bg-[#526471] hover:text-white"
-            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            ? "bg-[#52796F] text-white hover:bg-[#416864]"
+            : "bg-gray-100/80 text-gray-600 hover:bg-gray-200"
         )}
         onClick={() => setCategory("All Items")}
       >
@@ -25,10 +25,10 @@ export function CategoryBar() {
           key={cat}
           variant="ghost"
           className={cn(
-            "rounded-md px-4 py-1.5 h-auto text-sm font-medium transition-colors",
+            "rounded-lg px-4 py-1.5 md:px-4 md:py-1.5 h-auto text-sm md:text-sm font-semibold transition-all whitespace-nowrap",
             cat === selectedCategory
-              ? "bg-[#52796F] text-white hover:bg-[#43535e] hover:text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              ? "bg-[#52796F] text-white hover:bg-[#416864]"
+              : "bg-gray-100/80 text-gray-600 hover:bg-gray-200"
           )}
           onClick={() => setCategory(cat)}
         >

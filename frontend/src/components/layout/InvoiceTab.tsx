@@ -6,7 +6,7 @@ export function InvoiceTab() {
   const newOrder = useCartStore(state => state.newOrder)
 
   return (
-    <div className="flex items-center justify-between border-b p-2">
+    <div className="flex items-center justify-between border-b p-3">
       <div className="flex items-center gap-2">
         <div className="px-3 py-1 border rounded">
           Order #{orderNumber}

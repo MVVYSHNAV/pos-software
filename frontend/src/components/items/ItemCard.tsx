@@ -38,33 +38,33 @@ export function ItemCard({ item }: ItemCardProps) {
         )}
       </div>
 
-      <div className="p-3 flex flex-col gap-1 flex-1">
-        <h3 className="font-semibold text-sm text-gray-900 line-clamp-2 min-h-[2.5rem] leading-snug">
+      <div className="p-3 md:p-5 flex flex-col gap-1 md:gap-3 flex-1">
+        <h3 className="font-medium text-sm md:text-base text-gray-900 line-clamp-2 min-h-[2.5rem] leading-tight">
           {item.item_name}
         </h3>
 
-        <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">
+        <p className="text-[10px] md:text-xs text-gray-400 uppercase tracking-[0.2em] font-medium">
           {item.item_code}
         </p>
 
-        <div className="flex items-center justify-between mt-auto pt-2">
+        <div className="flex items-center justify-between mt-auto pt-2 md:pt-4">
           <div>
-            <span className="text-lg font-bold text-gray-800">
+            <span className="text-lg md:text-xl font-bold text-[#52796F]">
               ₹{Math.floor(item.standard_rate ?? 0)}
             </span>
-            <div className={`text-[10px] font-medium mt-0.5 ${stockColor}`}>
+            <div className={`text-[10px] md:text-xs font-semibold mt-0.5 ${stockColor}`}>
               Stock: {stockQty}
             </div>
           </div>
 
-          <div className="flex gap-2 items-center">
-            <Info className="h-4 w-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+          <div className="flex gap-2 md:gap-4 items-center">
+            <Info className="h-5 w-5 md:h-4 md:w-4 text-gray-300 hover:text-gray-500 cursor-pointer" />
             <Button
               size="icon"
-              className="h-7 w-7 rounded-full bg-[#52796F] hover:bg-[#43535e] shadow-sm"
+              className="h-10 w-10 md:h-10 md:w-10 rounded-full bg-[#52796F] hover:bg-[#416864] shadow-md transition-all active:scale-90"
               onClick={handleAddToCart}
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-5 w-5 md:h-5 md:w-5 text-white" />
             </Button>
           </div>
         </div>
