@@ -56,12 +56,8 @@ export function PaymentDialog({
             setProcessing(true)
             const payAmount = parseFloat(amount) || 0
 
-            if (payAmount <= 0) {
-                setProcessing(false)
-                return
-            }
-
-            const amountToRecord = payAmount >= total ? total : payAmount
+            // Allow negative amounts for returns/credit notes
+            const amountToRecord = Math.abs(payAmount) >= Math.abs(total) ? total : payAmount
 
             const payments: Payment[] = [{
                 mode_of_payment: selectedMode,
@@ -84,7 +80,14 @@ export function PaymentDialog({
             <DialogContent className="fixed z-50 flex flex-col w-full h-[100dvh] max-w-none rounded-none border-0 p-0 sm:h-auto sm:max-w-3xl sm:rounded-lg sm:border sm:gap-0 bg-background">
                 <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-2">
                     <DialogHeader className="mb-4">
-                        <DialogTitle className="text-xl">Checkout</DialogTitle>
+                        <div className="flex items-center gap-2">
+                            <DialogTitle className="text-xl">Checkout</DialogTitle>
+                            {activeOrder?.return_against && (
+                                <span className="px-2 py-0.5 text-xs font-bold bg-red-100 text-red-600 rounded-md uppercase">
+                                    Return
+                                </span>
+                            )}
+                        </div>
                         <DialogDescription>
                             Enter payment details and confirm to process the payment.
                         </DialogDescription>

@@ -13,6 +13,17 @@ export async function createDraftPOSInvoice(data: {
     payments: Payment[]
     return_against?: string
 }) {
+    // Calculate grand total from items
+    const grandTotal = data.items.reduce((sum, item) => sum + (item.qty * item.rate), 0)
+    const paymentAmount = data.payments.length > 0
+        ? data.payments.reduce((sum, p) => sum + p.amount, 0)
+        : grandTotal
+
+    const payments = data.payments.length > 0
+        ? data.payments
+        : [] // Will fail validation - payments are mandatory for POS
+    //  : [{ mode_of_payment: "Cash", amount: grandTotal }]
+
     return await db.createDoc(DOCTYPES.POS_INVOICE, {
         doctype: DOCTYPES.POS_INVOICE,
         is_pos: 1,
@@ -28,15 +39,16 @@ export async function createDraftPOSInvoice(data: {
 
         items: data.items.map(i => ({
             item_code: i.item_code,
-            qty: i.qty, // Keep logic as is, UI handles negative
+            qty: i.qty,
             rate: i.rate,
             warehouse: data.warehouse,
+            ...(i.pos_invoice_item && { pos_invoice_item: i.pos_invoice_item }),
         })),
 
-        // mandatory even for draft
-        payments: data.payments.length
-            ? data.payments
-            : [{ mode_of_payment: "Cash", amount: 0 }],
+        // MANDATORY POS FIELDS
+        payments: payments,
+        paid_amount: paymentAmount,
+        write_off_amount: 0,
     })
 }
 
@@ -46,7 +58,7 @@ export async function getPaidInvoices() {
             ["docstatus", "=", 1],
             ["status", "=", "Paid"]
         ],
-        fields: ["name", "customer", "posting_date", "posting_time", "grand_total", "status", "currency"],
+        fields: ["name", "customer", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return"],
         orderBy: {
             field: "posting_date",
             order: "desc"
@@ -59,7 +71,7 @@ export async function getDraftInvoices() {
         filters: [
             ["docstatus", "=", 0]
         ],
-        fields: ["name", "customer", "posting_date", "posting_time", "grand_total", "status", "currency"],
+        fields: ["name", "customer", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return"],
         orderBy: {
             field: "modified",
             order: "desc"

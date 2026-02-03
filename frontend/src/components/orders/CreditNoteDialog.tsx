@@ -54,12 +54,23 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
     const handleReturn = async () => {
         if (!selectedInvoiceInfo) return
 
+        // Check if this invoice has already been returned
+        if (selectedInvoiceInfo.return_invoice) {
+            toast({
+                description: "This invoice has already been returned.",
+                variant: "destructive"
+            })
+            return
+        }
+
         // Transform items to cart format with NEGATIVE quantities for return
+        // IMPORTANT: Include pos_invoice_item to link to original invoice row
         const cartItems = selectedInvoiceInfo.items.map((item: any) => ({
             item_code: item.item_code,
             item_name: item.item_name || item.item_code,
             qty: -1 * Math.abs(item.qty), // Ensure negative
-            rate: item.rate
+            rate: item.rate,
+            pos_invoice_item: item.name // Link to original invoice item row
         }))
 
         const customerData = {
@@ -119,7 +130,16 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                             </div>
 
                             <div className="p-4 border-t bg-white">
-                                <Button className="w-full gap-2 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200" onClick={handleReturn}>
+                                {selectedInvoiceInfo.return_invoice && (
+                                    <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
+                                        ⚠️ This invoice has already been returned
+                                    </div>
+                                )}
+                                <Button
+                                    className="w-full gap-2 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    onClick={handleReturn}
+                                    disabled={!!selectedInvoiceInfo.return_invoice}
+                                >
                                     <ArrowLeft className="h-4 w-4" />
                                     Return / Credit Note
                                 </Button>
@@ -158,6 +178,11 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                             <span className="font-semibold text-gray-900 text-sm">
                                                 {inv.name}
                                             </span>
+                                            {inv.is_return === 1 && (
+                                                <span className="px-1.5 py-0.5 text-[10px] font-bold bg-red-100 text-red-600 rounded uppercase">
+                                                    Return
+                                                </span>
+                                            )}
                                         </div>
                                         <div className="text-right">
                                             <span className="block font-bold text-[#22c55e] text-base">

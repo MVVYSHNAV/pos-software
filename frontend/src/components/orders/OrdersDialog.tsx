@@ -128,6 +128,11 @@ export function OrdersDialog({ open, onOpenChange, defaultTab = "drafts" }: Orde
                             <span className="font-semibold text-gray-900 text-sm">
                                 {inv.name}
                             </span>
+                            {inv.is_return === 1 && (
+                                <span className="px-1.5 py-0.5 text-[10px] font-bold bg-red-100 text-red-600 rounded uppercase">
+                                    Returned
+                                </span>
+                            )}
                         </div>
                         <div className="text-right">
                             <span className="block font-bold text-[#22c55e] text-base">
