@@ -9,7 +9,7 @@ import {
 import { useUserStore } from "@/store/userStore"
 import { BarChart3, FileText, LogOut, Receipt, User } from "lucide-react"
 
-export function UserProfile() {
+export function UserProfile({ onIssueCreditNote }: { onIssueCreditNote?: () => void }) {
     const { currentUser, logout } = useUserStore()
 
     // Fallback for user name if not loaded or available
@@ -41,7 +41,10 @@ export function UserProfile() {
                     <FileText className="mr-2 h-4 w-4" />
                     <span>Invoices</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={onIssueCreditNote}
+                >
                     <Receipt className="mr-2 h-4 w-4" />
                     <span>Issue Credit Note</span>
                 </DropdownMenuItem>

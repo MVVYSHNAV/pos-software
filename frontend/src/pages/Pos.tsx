@@ -16,19 +16,34 @@ import { useInvoiceStore } from "@/store/invoiceStore"
 import { useToast } from "@/hooks/use-toast"
 import { CircleCheck } from "lucide-react"
 import type { Customer } from "@/types/customer"
-
+import { CreditNoteDialog } from "@/components/orders/CreditNoteDialog"
 
 export default function Pos() {
   const { loadProfile, profile, openingEntry, loading: posLoading, error: posError } = usePosStore()
   const { fetchItems, fetchCategories, loading: itemsLoading, error: itemsError } = useItemsStore()
   const { initSession } = useUserStore()
   const [isPaymentOpen, setIsPaymentOpen] = useState(false)
+  const [isCreditNoteOpen, setIsCreditNoteOpen] = useState(false)
   const activeItems = useCartStore(selectActiveItems)
   const subtotal = useCartStore(selectSubtotal)
   const { clearCart, newOrder } = useCartStore()
   const setDraftInvoice = useInvoiceStore(s => s.setDraftInvoice)
   const { toast } = useToast()
 
+  // ... (useEffects remain the same, I won't touch them to minimize diff size risk, assuming they are fine)
+
+  // ... (handlePaymentSubmit remains same)
+
+  // I need to be careful not to replace the whole file if I can avoid it, but the state usage is at top and render at bottom.
+  // I will use a larger block replacement to be safe since I need to inject state AND render.
+
+  // Actually, I'll do two edits. One for logic/state, one for render.
+  // Wait, I can't do two edits in one step effectively if they overlap or content changes.
+
+  // Let's replace the top part first to fix the destructuring error.
+
+  // Wait, I see the file content from step 613 (view_file will return it).
+  // I will assume standard structure.
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -118,7 +133,7 @@ export default function Pos() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 overflow-hidden font-sans text-gray-900">
-      <TopBar />
+      <TopBar onOpenCreditNote={() => setIsCreditNoteOpen(true)} />
 
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
@@ -172,6 +187,11 @@ export default function Pos() {
         onOpenChange={setIsPaymentOpen}
         total={subtotal}
         onConfirm={handlePaymentSubmit}
+      />
+
+      <CreditNoteDialog
+        open={isCreditNoteOpen}
+        onOpenChange={setIsCreditNoteOpen}
       />
     </div>
   )

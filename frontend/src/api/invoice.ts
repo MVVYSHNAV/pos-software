@@ -36,3 +36,17 @@ export async function createDraftPOSInvoice(data: {
             : [{ mode_of_payment: "Cash", amount: 0 }],
     })
 }
+
+export async function getPaidInvoices() {
+    return await db.getDocList(DOCTYPES.POS_INVOICE, {
+        filters: [
+            ["docstatus", "=", 1],
+            ["status", "=", "Paid"]
+        ],
+        fields: ["name", "customer", "posting_date", "posting_time", "grand_total", "status", "currency"],
+        orderBy: {
+            field: "posting_date",
+            order: "desc"
+        }
+    })
+}
