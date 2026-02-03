@@ -12,8 +12,8 @@ export async function createDraftPOSInvoice(data: {
     items: SalesInvoiceItem[]
     payments: Payment[]
 }) {
-    return await db.createDoc(DOCTYPES.SALES_INVOICE, {
-        doctype: DOCTYPES.SALES_INVOICE,
+    return await db.createDoc(DOCTYPES.POS_INVOICE, {
+        doctype: DOCTYPES.POS_INVOICE,
         is_pos: 1,
         customer: data.customer,
         company: data.company,

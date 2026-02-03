@@ -4,9 +4,9 @@ export const DOCTYPES = {
     POS_OPENING_ENTRY: "POS Opening Entry",
     POS_CLOSING_ENTRY: "POS Closing Entry",
 
-    // Sales
-    SALES_INVOICE: "Sales Invoice",
-    SALES_INVOICE_ITEM: "Sales Invoice Item",
+    // Pos
+    POS_INVOICE: "POS Invoice",
+    POS_INVOICE_ITEM: "POS Invoice Item",
 
     // Items
     ITEM: "Item",

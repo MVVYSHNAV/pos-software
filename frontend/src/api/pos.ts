@@ -8,11 +8,17 @@ import type { POSProfile } from "@/types/pos"
 export async function getPOSProfile(): Promise<POSProfile> {
   const profiles = await db.getDocList<POSProfile>(DOCTYPES.POS_PROFILE, {
     fields: ["name"],
-    limit: 1,
   })
 
   if (!profiles.length) {
     throw new Error("No POS Profile found for user")
+  }
+
+  for (const profile of profiles) {
+    const entry = await getOpeningEntry(profile.name)
+    if (entry) {
+      return await db.getDoc(DOCTYPES.POS_PROFILE, profile.name)
+    }
   }
 
   return await db.getDoc(DOCTYPES.POS_PROFILE, profiles[0].name)
