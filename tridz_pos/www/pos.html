@@ -4,7 +4,11 @@
 <head>
     <meta charset="utf-8" />
     <title>Tridz POS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/tridz_pos/pos/dist/assets/index.css" />
+    <script>
+        window.csrf_token = "{{ csrf_token }}";
+    </script>
     <script type="module" src="/assets/tridz_pos/pos/dist/assets/index.js"></script>
 </head>
 
