@@ -294,8 +294,8 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                             <div
                                                 key={item.name}
                                                 className={`rounded-lg p-2.5 border transition-all ${itemState.selected
-                                                    ? 'bg-[#E6EEE8] border-[#52796F]'
-                                                    : 'bg-white border-gray-300'
+                                                    ? 'bg-[#E6EEE8] border-[#52796F] hover:border-black'
+                                                    : 'bg-white border-gray-300 hover:border-black'
                                                     }`}
                                             >
                                                 <div className="flex items-start gap-3">
@@ -329,11 +329,11 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                                             <button
                                                                 onClick={() => updateItemQty(item.name, 1)}
                                                                 disabled={!itemState.selected || itemState.qty >= itemState.maxQty}
-                                                                className="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                                className="lg:w-9 lg:h-9 w-6 h-6 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                                             >
                                                                 <Plus className="h-4 w-4 text-gray-600" />
                                                             </button>
-                                                            <span className="text-sm text-gray-500">/ {itemState.maxQty}</span>
+                                                            <span className="text-xs lg:text-sm text-gray-500">/ {itemState.maxQty}</span>
                                                             <span className="text-sm font-semibold text-gray-900 ml-auto">
                                                                 {formatCurrency(item.rate * itemState.qty)}
                                                             </span>
@@ -381,7 +381,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                 <button
                                     onClick={handleIssueCreditNote}
                                     disabled={!!selectedInvoiceInfo.hasReturn || getSelectedItemsCount() === 0}
-                                    className="flex-1 px-3.5 py-3.5 bg-[#52796F] text-white rounded-xl text-sm font-medium hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="flex-1 px-3.5 py-3.5 bg-[#52796F] text-white rounded-xl text-sm font-medium hover:bg-[#52796F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
                                     Issue Credit Note
                                 </button>
@@ -393,35 +393,35 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
         )
     }
 
-    // Invoice list view (unchanged)
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-3xl w-full p-0 gap-0 bg-white h-[90vh] max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
+            <DialogContent className="max-w-3xl w-full p-0 gap-0 bg-white h-auto max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
                 <div className="p-4 bg-white shrink-0 border-b border-gray-100">
                     <h2 className="text-lg font-bold">Issue Credit Note</h2>
                     <p className="text-sm text-gray-500">Select a paid invoice to issue credit note</p>
                 </div>
 
                 {/* Content Container - Fixed frame with internal scroll */}
-                <div className="flex-1 overflow-hidden p-4">
+                <div className="flex-1 overflow-hidden p-2">
                     {loading ? (
                         <div className="flex justify-center py-8">
                             <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
                         </div>
                     ) : (
-                        <div className="h-full border border-gray-300 rounded-lg overflow-hidden flex flex-col">
+                        <div className="h-auto border border-gray-300 rounded-lg overflow-hidden flex flex-col">
                             {/* Inner Scrollable List */}
-                            <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-3">
+                            <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-3 hover:border-black">
                                 {invoices.map((inv) => (
                                     <div
                                         key={inv.name}
-                                        className="bg-white p-3 rounded-lg border border-gray-200 hover:border-emerald-700 cursor-pointer transition-all"
+                                        className="bg-white p-3 rounded-lg border border-gray-200 hover:border-black cursor-pointer transition-all"
                                         onClick={() => handleSelectInvoice(inv)}
                                     >
-                                        <div className="flex items-start justify-between mb-2">
+                                        <div className="flex items-start justify-between">
                                             <div className="flex items-center gap-2">
                                                 <FileText className="h-4 w-4 text-gray-400" />
-                                                <span className="font-semibold text-gray-900 text-sm">
+                                                <span className="font-semibold text-gray-900 text-md">
                                                     {inv.name}
                                                 </span>
                                                 {inv.is_return === 1 && (
@@ -440,21 +440,21 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                             </div>
                                         </div>
 
-                                        <div className="text-xs text-gray-500 mb-2">
+                                        <div className="text-sm text-gray-500">
                                             {inv.posting_date}, {inv.posting_time?.substring(0, 5)}
                                         </div>
 
                                         <div>
-                                            <p className="text-sm font-medium text-gray-800">{inv.customer}</p>
+                                            <p className="text-lg font-medium text-gray-800">{inv.customer}</p>
                                             {inv.contact_mobile && (
-                                                <p className="text-xs text-gray-500">{inv.contact_mobile}</p>
+                                                <p className="text-sm text-gray-500">{inv.contact_mobile}</p>
                                             )}
                                         </div>
 
                                         {inv.total_qty && (
-                                            <div className="mt-2 text-right">
-                                                <p className="text-xs text-gray-500 font-medium bg-gray-50 inline-block px-2 py-1 rounded">
-                                                    {Math.floor(inv.total_qty)} item{Math.floor(inv.total_qty) !== 1 ? '(s)' : ''}
+                                            <div className="mt-2 text-left">
+                                                <p className="text-sm text-gray-500 font-medium inline-block px-2 py-1 rounded">
+                                                    {Math.floor(inv.total_qty)} item{Math.floor(inv.total_qty) !== 1 ? 's' : ''}
                                                 </p>
                                             </div>
                                         )}
