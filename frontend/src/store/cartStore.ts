@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
+import type { Customer } from "@/types/customer"
 
 interface CartItem {
   item_code: string
@@ -11,6 +12,7 @@ interface CartItem {
 interface Order {
   id: number
   items: CartItem[]
+  customer?: Customer
 }
 
 interface CartState {
@@ -26,7 +28,8 @@ interface CartState {
   newOrder: () => void
   closeOrder: (orderId: number) => void
   selectOrder: (orderId: number) => void
-  loadOrder: (items: CartItem[]) => void
+  loadOrder: (items: CartItem[], customer?: Customer) => void
+  setCustomer: (customer: Customer | undefined) => void
 
   // Selectors (helper accessors, though typically used in component selectors)
   getActiveOrder: () => Order | undefined
@@ -116,12 +119,9 @@ export const useCartStore = create<CartState>()(
       closeOrder: (orderId) =>
         set(state => {
           if (state.orders.length <= 1) {
-            // Should not close the last order, maybe just clear it or do nothing?? 
-            // Usually we want at least one order. If closing the last one, maybe reset it?
-            // Let's implement: if 1 order left, clear it, don't remove it.
             if (state.orders.length === 1) {
               return {
-                orders: [{ ...state.orders[0], items: [] }]
+                orders: [{ ...state.orders[0], items: [], customer: undefined }]
               }
             }
           }
@@ -130,17 +130,8 @@ export const useCartStore = create<CartState>()(
           let newActiveId = state.activeOrderId
 
           if (state.activeOrderId === orderId) {
-            // We closed the active order, need to switch to another
-            // Try previous, or next.
-            // Simplest: take the last one in the new list, or index 0?
-            // If we close order index 2, we can go to index 1.
-            // If we close index 0, go to index 0 (which was 1).
             const closedIndex = state.orders.findIndex(o => o.id === orderId)
-            // newOrders has the item removed.
-            // If closedIndex was 0, new active is 0 (which was next).
-            // If closedIndex was last, new active is last-1.
             if (newOrders.length > 0) {
-              // Try to keep relative position or go to last
               const nextOrder = newOrders[Math.min(closedIndex, newOrders.length - 1)]
               newActiveId = nextOrder.id
             }
@@ -154,11 +145,20 @@ export const useCartStore = create<CartState>()(
 
       selectOrder: (orderId) => set({ activeOrderId: orderId }),
 
-      loadOrder: (items) =>
+      loadOrder: (items, customer) =>
         set(state => {
           const newOrders = state.orders.map(order => {
             if (order.id !== state.activeOrderId) return order
-            return { ...order, items }
+            return { ...order, items, customer }
+          })
+          return { orders: newOrders }
+        }),
+
+      setCustomer: (customer) =>
+        set(state => {
+          const newOrders = state.orders.map(order => {
+            if (order.id !== state.activeOrderId) return order
+            return { ...order, customer }
           })
           return { orders: newOrders }
         }),

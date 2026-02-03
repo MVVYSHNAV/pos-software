@@ -70,9 +70,15 @@ export function OrdersDialog({ open, onOpenChange }: OrdersDialogProps) {
             rate: item.rate
         }))
 
-        loadOrder(cartItems)
+        const customerData = {
+            name: selectedInvoiceInfo.customer,
+            customer_name: selectedInvoiceInfo.customer_name || selectedInvoiceInfo.customer,
+            mobile_no: selectedInvoiceInfo.contact_mobile || selectedInvoiceInfo.mobile_no
+        }
 
-        // Delete the draft after resuming so it doesn't duplicate? 
+        loadOrder(cartItems, customerData)
+
+        // Delete the draft after resuming so it doesn't duplicate?
         // Or keep it? Standard POS flow usually deletes the draft when loaded to cart to prevent duplicates.
         // Let's delete it.
         try {

@@ -8,6 +8,7 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { useCartStore } from "@/store/cartStore"
 import { usePosStore } from "@/store/posStore"
 import type { Payment } from "@/types/invoice"
 import { Printer } from "lucide-react"
@@ -31,10 +32,12 @@ export function PaymentDialog({
     onConfirm,
 }: PaymentDialogProps) {
     const { profile } = usePosStore()
+    const { setCustomer, activeOrderId, orders } = useCartStore()
+    const activeOrder = orders.find(o => o.id === activeOrderId)
+
     const [amount, setAmount] = useState<string>("")
     const [selectedMode, setSelectedMode] = useState<string>("")
     const [processing, setProcessing] = useState(false)
-    const [selectedCustomer, setSelectedCustomer] = useState<Customer | undefined>()
 
     // Initialize with default payment mode and total amount when opened
     useEffect(() => {
@@ -42,8 +45,8 @@ export function PaymentDialog({
             setAmount(total.toFixed(2)) // Initialize with exact amount
             const defaultMode = profile.payments.find(p => p.default)?.mode_of_payment || "Cash"
             setSelectedMode(defaultMode)
-            // Customer fetching is now handled by CustomerSearch component lazily or on mount
         }
+        // Customer is managed by store now
     }, [open, total, profile])
 
     const handleConfirm = async () => {
@@ -65,7 +68,7 @@ export function PaymentDialog({
                 amount: amountToRecord
             }]
 
-            await onConfirm(payments, selectedCustomer)
+            await onConfirm(payments, activeOrder?.customer)
             onOpenChange(false)
         } catch (error) {
             console.error("Payment failed", error)
@@ -88,8 +91,8 @@ export function PaymentDialog({
                     </DialogHeader>
 
                     <CustomerSearch
-                        selectedCustomer={selectedCustomer}
-                        onSelect={setSelectedCustomer}
+                        selectedCustomer={activeOrder?.customer}
+                        onSelect={setCustomer}
                     />
 
                     <PaymentModeGrid
@@ -128,7 +131,7 @@ export function PaymentDialog({
                     <Button
                         className="h-12 flex-1 bg-[#52796F] hover:bg-[#43645B] text-white gap-2 rounded-xl text-base font-medium shadow-sm"
                         onClick={handleConfirm}
-                        disabled={processing || !selectedMode || !selectedCustomer}
+                        disabled={processing || !selectedMode || !activeOrder?.customer}
                     >
                         <Printer className="h-5 w-5" />
                         {processing ? "Processing..." : "Confirm & Print"}
