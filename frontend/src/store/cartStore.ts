@@ -13,6 +13,7 @@ interface Order {
   id: number
   items: CartItem[]
   customer?: Customer
+  return_against?: string
 }
 
 interface CartState {
@@ -28,7 +29,7 @@ interface CartState {
   newOrder: () => void
   closeOrder: (orderId: number) => void
   selectOrder: (orderId: number) => void
-  loadOrder: (items: CartItem[], customer?: Customer) => void
+  loadOrder: (items: CartItem[], customer?: Customer, return_against?: string) => void
   setCustomer: (customer: Customer | undefined) => void
 
   // Selectors (helper accessors, though typically used in component selectors)
@@ -74,11 +75,21 @@ export const useCartStore = create<CartState>()(
             const idx = items.findIndex(i => i.item_code === itemCode)
 
             if (idx > -1) {
-              if (items[idx].qty > 1) {
-                items[idx] = { ...items[idx], qty: items[idx].qty - 1 }
-              } else {
-                items.splice(idx, 1)
-              }
+              // Allow negative quantity for returns? 
+              // Usually returns work by adding item with negative qty.
+              // If we reduce, we subtract 1.
+              // If we start with negative qty (from loadOrder), reducing makes it MORE negative (e.g. -1 -> -2).
+              // Let's assume standard logic:
+              // If qty > 1, decrement.
+              // If qty = 1, remove.
+              // If qty < 0 (return), maybe we want to "increase" it towards 0 (removes item from return list) or make it more negative?
+              // Standard POS return behavior: You load "Sold Item x 2". You want to return 1. You change qty to -1.
+              // Here we are loading with negative qty. So "Item x -2".
+              // If I want to return only 1, I should change qty to -1.
+              // So "reduceItem" in a return context means "return LESS"? Or "return MORE"?
+              // Let's keep specific logic simple: reduceItem reduces the number (value - 1).
+              // -1 -> -2 (Returning 2 items).
+              items[idx] = { ...items[idx], qty: items[idx].qty - 1 }
             }
             return { ...order, items }
           })
@@ -101,7 +112,7 @@ export const useCartStore = create<CartState>()(
         set(state => {
           const newOrders = state.orders.map(order => {
             if (order.id !== state.activeOrderId) return order
-            return { ...order, items: [] }
+            return { ...order, items: [], customer: undefined, return_against: undefined }
           })
           return { orders: newOrders }
         }),
@@ -121,7 +132,7 @@ export const useCartStore = create<CartState>()(
           if (state.orders.length <= 1) {
             if (state.orders.length === 1) {
               return {
-                orders: [{ ...state.orders[0], items: [], customer: undefined }]
+                orders: [{ ...state.orders[0], items: [], customer: undefined, return_against: undefined }]
               }
             }
           }
@@ -145,11 +156,11 @@ export const useCartStore = create<CartState>()(
 
       selectOrder: (orderId) => set({ activeOrderId: orderId }),
 
-      loadOrder: (items, customer) =>
+      loadOrder: (items, customer, return_against) =>
         set(state => {
           const newOrders = state.orders.map(order => {
             if (order.id !== state.activeOrderId) return order
-            return { ...order, items, customer }
+            return { ...order, items, customer, return_against }
           })
           return { orders: newOrders }
         }),

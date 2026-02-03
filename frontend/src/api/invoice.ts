@@ -11,6 +11,7 @@ export async function createDraftPOSInvoice(data: {
     warehouse: string
     items: SalesInvoiceItem[]
     payments: Payment[]
+    return_against?: string
 }) {
     return await db.createDoc(DOCTYPES.POS_INVOICE, {
         doctype: DOCTYPES.POS_INVOICE,
@@ -22,10 +23,12 @@ export async function createDraftPOSInvoice(data: {
         currency: data.currency,
         update_stock: 1,
         warehouse: data.warehouse,
+        is_return: data.return_against ? 1 : 0,
+        return_against: data.return_against,
 
         items: data.items.map(i => ({
             item_code: i.item_code,
-            qty: i.qty,
+            qty: i.qty, // Keep logic as is, UI handles negative
             rate: i.rate,
             warehouse: data.warehouse,
         })),

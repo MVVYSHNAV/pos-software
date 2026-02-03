@@ -4,7 +4,7 @@ import { ScanLine, Settings } from "lucide-react"
 import { UserProfile } from "./UserProfile"
 import { useEffect, useState } from "react"
 
-export function TopBar({ onOpenCreditNote }: { onOpenCreditNote?: () => void }) {
+export function TopBar() {
   const { searchTerm, setSearchTerm } = useItemsStore()
   const [isOnline, setIsOnline] = useState(navigator.onLine)
 
@@ -52,7 +52,7 @@ export function TopBar({ onOpenCreditNote }: { onOpenCreditNote?: () => void }) 
         {/* Settings Icon - Restored */}
         <Settings className="h-6 w-6 text-gray-600 cursor-pointer stroke-[1.5px] hover:text-[#52796F] transition-colors" />
 
-        <UserProfile onIssueCreditNote={onOpenCreditNote} />
+        <UserProfile />
       </div>
     </div>
   )

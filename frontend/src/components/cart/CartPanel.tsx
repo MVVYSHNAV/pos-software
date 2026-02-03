@@ -68,6 +68,8 @@ export function CartPanel() {
       return
     }
 
+    const activeOrder = orders.find(o => o.id === activeOrderId)
+
     try {
       // Create draft invoice
       const invoice = await createDraftPOSInvoice({
@@ -79,6 +81,7 @@ export function CartPanel() {
         warehouse: profile.warehouse,
         items: items as any,
         payments,
+        return_against: activeOrder?.return_against
       })
 
       if (invoice?.name) {

@@ -11,12 +11,13 @@ import { useToast } from "@/hooks/use-toast"
 interface OrdersDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
+    defaultTab?: "drafts" | "recent"
 }
 
-export function OrdersDialog({ open, onOpenChange }: OrdersDialogProps) {
+export function OrdersDialog({ open, onOpenChange, defaultTab = "drafts" }: OrdersDialogProps) {
     const { loadOrder } = useCartStore()
     const { toast } = useToast()
-    const [activeTab, setActiveTab] = useState("drafts")
+    const [activeTab, setActiveTab] = useState(defaultTab)
     const [drafts, setDrafts] = useState<any[]>([])
     const [recent, setRecent] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
@@ -25,8 +26,15 @@ export function OrdersDialog({ open, onOpenChange }: OrdersDialogProps) {
 
     useEffect(() => {
         if (open) {
+            setActiveTab(defaultTab)
             loadData()
             setSelectedInvoiceInfo(null)
+        }
+    }, [open, defaultTab])
+
+    useEffect(() => {
+        if (open) {
+            loadData()
         }
     }, [open, activeTab])
 
@@ -154,6 +162,30 @@ export function OrdersDialog({ open, onOpenChange }: OrdersDialogProps) {
         </div>
     )
 
+    const handleReturn = async () => {
+        if (!selectedInvoiceInfo) return
+
+        // Transform items to cart format with NEGATIVE quantities for return
+        const cartItems = selectedInvoiceInfo.items.map((item: any) => ({
+            item_code: item.item_code,
+            item_name: item.item_name || item.item_code,
+            qty: -1 * Math.abs(item.qty), // Ensure negative
+            rate: item.rate
+        }))
+
+        const customerData = {
+            name: selectedInvoiceInfo.customer,
+            customer_name: selectedInvoiceInfo.customer_name || selectedInvoiceInfo.customer,
+            mobile_no: selectedInvoiceInfo.contact_mobile || selectedInvoiceInfo.mobile_no
+        }
+
+        // Load order with return_against set to original invoice name
+        loadOrder(cartItems, customerData, selectedInvoiceInfo.name)
+
+        toast({ description: "Return initialized. Please verify items to return." })
+        onOpenChange(false)
+    }
+
     if (selectedInvoiceInfo || loadingDetails) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
@@ -198,14 +230,21 @@ export function OrdersDialog({ open, onOpenChange }: OrdersDialogProps) {
                             </div>
 
                             <div className="p-4 border-t bg-white flex gap-3">
-                                <Button variant="destructive" className="flex-1 gap-2" onClick={handleDelete}>
-                                    <Trash2 className="h-4 w-4" />
-                                    Delete
-                                </Button>
-                                {selectedInvoiceInfo.docstatus === 0 && (
-                                    <Button className="flex-[2] gap-2 bg-[#52796F] hover:bg-[#43645B]" onClick={handleResume}>
-                                        <PlayCircle className="h-4 w-4" />
-                                        Resume Order
+                                {selectedInvoiceInfo.docstatus === 0 ? (
+                                    <>
+                                        <Button variant="destructive" className="flex-1 gap-2" onClick={handleDelete}>
+                                            <Trash2 className="h-4 w-4" />
+                                            Delete
+                                        </Button>
+                                        <Button className="flex-[2] gap-2 bg-[#52796F] hover:bg-[#43645B]" onClick={handleResume}>
+                                            <PlayCircle className="h-4 w-4" />
+                                            Resume Order
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <Button className="w-full gap-2 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200" onClick={handleReturn}>
+                                        <ArrowLeft className="h-4 w-4" />
+                                        Return / Credit Note
                                     </Button>
                                 )}
                             </div>
@@ -223,14 +262,14 @@ export function OrdersDialog({ open, onOpenChange }: OrdersDialogProps) {
                     <DialogTitle className="text-lg font-bold">Invoices</DialogTitle>
                 </DialogHeader>
 
-                <Tabs defaultValue="drafts" value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+                <Tabs defaultValue="drafts" value={activeTab} onValueChange={(val) => setActiveTab(val as "drafts" | "recent")} className="flex-1 flex flex-col overflow-hidden">
                     <div className="px-4 pt-2 shrink-0">
                         <TabsList className="grid w-full grid-cols-2 bg-muted/20">
                             <TabsTrigger value="drafts" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
                                 Drafts
                             </TabsTrigger>
                             <TabsTrigger value="recent" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                                Recent Orders
+                                Paid Orders
                             </TabsTrigger>
                         </TabsList>
                     </div>
