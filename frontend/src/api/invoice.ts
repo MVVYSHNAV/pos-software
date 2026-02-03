@@ -60,7 +60,7 @@ export async function getPaidInvoices() {
         ],
         fields: ["name", "customer", "contact_mobile", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return", "total_qty"],
         orderBy: {
-            field: "posting_date",
+            field: "modified",
             order: "desc"
         }
     })
