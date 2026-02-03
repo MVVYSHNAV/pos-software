@@ -396,22 +396,22 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-xl md:max-w-3xl w-full p-0 gap-0 bg-white h-auto max-h-[90vh] rounded-none sm:rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
+            <DialogContent className="max-w-xl md:max-w-3xl w-full p-0 gap-0 bg-white h-[85vh] max-h-[90vh] rounded-none sm:rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
                 <div className="p-4 bg-white shrink-0 border-b border-gray-100">
                     <h2 className="text-lg font-bold">Issue Credit Note</h2>
                     <p className="text-sm text-gray-500">Select a paid invoice to issue credit note</p>
                 </div>
 
                 {/* Content Container - Fixed frame with internal scroll */}
-                <div className="flex-1 overflow-hidden p-2">
+                <div className="flex-1 min-h-0 overflow-hidden p-2">
                     {loading ? (
                         <div className="flex justify-center py-8">
                             <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
                         </div>
                     ) : (
-                        <div className="h-auto border border-gray-300 rounded-lg overflow-hidden flex flex-col">
+                        <div className="h-full border border-gray-300 rounded-lg overflow-hidden flex flex-col">
                             {/* Inner Scrollable List */}
-                            <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-3 hover:border-black">
+                            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2 space-y-3">
                                 {invoices.map((inv) => (
                                     <div
                                         key={inv.name}

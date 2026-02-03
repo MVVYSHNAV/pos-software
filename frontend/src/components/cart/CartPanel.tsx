@@ -8,7 +8,7 @@ import { PaymentDialog } from "./PaymentDialog"
 import { useToast } from "@/hooks/use-toast"
 import { CircleCheck } from "lucide-react"
 import { useInvoiceStore } from "@/store/invoiceStore"
-import { createDraftPOSInvoice } from "@/api/invoice"
+import { createDraftPOSInvoice, submitInvoice } from "@/api/invoice"
 
 import { OrderTabs } from "./OrderTabs"
 import type { Customer } from "@/types/customer"
@@ -85,6 +85,7 @@ export function CartPanel() {
       })
 
       if (invoice?.name) {
+        await submitInvoice(invoice.name)
         setDraftInvoice(invoice.name)
       }
 

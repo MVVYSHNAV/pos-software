@@ -56,7 +56,6 @@ export async function getPaidInvoices() {
     return await db.getDocList(DOCTYPES.POS_INVOICE, {
         filters: [
             ["docstatus", "=", 1],
-            ["status", "=", "Paid"],
             ["is_return", "=", 0] // Exclude return invoices - can't return a return
         ],
         fields: ["name", "customer", "contact_mobile", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return", "total_qty"],
@@ -86,4 +85,10 @@ export async function getInvoice(name: string) {
 
 export async function deleteInvoice(name: string) {
     return await db.deleteDoc(DOCTYPES.POS_INVOICE, name)
+}
+
+export async function submitInvoice(name: string) {
+    return await db.updateDoc(DOCTYPES.POS_INVOICE, name, {
+        docstatus: 1
+    })
 }
