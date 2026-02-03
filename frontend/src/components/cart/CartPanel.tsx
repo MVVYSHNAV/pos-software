@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { printERPNextDoc } from "@/lib/utils"
 import { CartSummary } from "./CartSummary"
 import { Button } from "@/components/ui/button"
 import { useCartStore, selectSubtotal, selectActiveItems } from "@/store/cartStore"
@@ -58,7 +59,7 @@ export function CartPanel() {
     setIsPaymentOpen(true)
   }
 
-  const handlePaymentSubmit = async (payments: any[], customer?: Customer) => {
+  const completeAndPrint = async (payments: any[], customer?: Customer) => {
     if (!profile) {
       toast({
         title: "Error",
@@ -87,6 +88,10 @@ export function CartPanel() {
       if (invoice?.name) {
         await submitInvoice(invoice.name)
         setDraftInvoice(invoice.name)
+        printERPNextDoc({
+          doctype: "POS Invoice",
+          name: invoice.name
+        })
       }
 
       toast({
@@ -173,7 +178,7 @@ export function CartPanel() {
         open={isPaymentOpen}
         onOpenChange={setIsPaymentOpen}
         total={subtotal}
-        onConfirm={handlePaymentSubmit}
+        onConfirm={completeAndPrint}
       />
 
 
