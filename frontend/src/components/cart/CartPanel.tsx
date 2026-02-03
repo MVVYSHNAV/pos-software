@@ -121,7 +121,7 @@ export function CartPanel() {
     <div className="w-full h-full border-l flex flex-col bg-background shadow-sm">
       <OrderTabs />
 
-      <div className="p-4 lg:p-6 flex flex-col h-full">
+      <div className="flex flex-col h-full p-2">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-emerald-950">
             Current Order

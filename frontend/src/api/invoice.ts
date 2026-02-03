@@ -59,7 +59,7 @@ export async function getPaidInvoices() {
             ["status", "=", "Paid"],
             ["is_return", "=", 0] // Exclude return invoices - can't return a return
         ],
-        fields: ["name", "customer", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return"],
+        fields: ["name", "customer", "contact_mobile", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return", "total_qty"],
         orderBy: {
             field: "posting_date",
             order: "desc"

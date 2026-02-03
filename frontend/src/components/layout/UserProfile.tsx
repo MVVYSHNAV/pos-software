@@ -7,7 +7,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useUserStore } from "@/store/userStore"
-import { BarChart3, LogOut, Receipt, User } from "lucide-react"
+import { BarChart3, Dock, LogOut, Receipt, User } from "lucide-react"
 import { useState } from "react"
 import { CreditNoteDialog } from "@/components/orders/CreditNoteDialog"
 
@@ -40,6 +40,10 @@ export function UserProfile() {
                     <DropdownMenuItem className="cursor-pointer">
                         <BarChart3 className="mr-2 h-4 w-4" />
                         <span>Reports</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer">
+                        <Dock className="mr-2 h-4 w-4" />
+                        <span>Invoices</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         className="cursor-pointer"
