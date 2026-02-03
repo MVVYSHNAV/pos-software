@@ -1,4 +1,4 @@
-import { AlertCircle, ArrowRight, LayoutDashboard } from "lucide-react"
+import { AlertCircle, ArrowRight, LayoutDashboard, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function OpeningEntryError({ error }: { error: string }) {
@@ -34,10 +34,21 @@ export function OpeningEntryError({ error }: { error: string }) {
                     <Button
                         variant="outline"
                         onClick={() => window.location.href = "/app"}
-                        className="w-full h-12 border-gray-200 text-gray-600 font-medium rounded-xl gap-2 hover:bg-gray-50 transition-all"
+                        className="w-full h-12 border-gray-200 text-gray-600 font-medium rounded-xl gap-2 hover:bg-gray-50 hover:text-black transition-all"
                     >
                         <LayoutDashboard className="h-4 w-4" />
                         Go to Dashboard
+                    </Button>
+
+                    <Button
+                        variant="ghost"
+                        onClick={() => {
+                            window.location.reload()
+                        }}
+                        className="w-full h-12 text-gray-500 font-medium rounded-xl gap-2 hover:bg-gray-100 hover:text-gray-900 transition-all"
+                    >
+                        <RefreshCw className="h-4 w-4" />
+                        Clear Cache & Reload
                     </Button>
                 </div>
 

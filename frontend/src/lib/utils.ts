@@ -12,3 +12,44 @@ export function formatCurrency(amount: number) {
         minimumFractionDigits: 2
     }).format(amount)
 }
+
+interface PrintOptions {
+    doctype?: string
+    name: string
+    format?: string
+    noLetterhead?: boolean
+    autoPrint?: boolean
+}
+
+
+export function printERPNextDoc({
+    doctype = "POS Invoice",
+    name,
+    format = "POS Invoice",
+    noLetterhead = true,
+    autoPrint = false,
+}: PrintOptions) {
+    if (!name) {
+        throw new Error("Document name is required for printing")
+    }
+
+    const params = new URLSearchParams({
+        doctype,
+        name,
+        format,
+    })
+
+    if (noLetterhead) {
+        params.append("no_letterhead", "1")
+    }
+
+    const printUrl = `/printview?${params.toString()}`
+
+    const win = window.open(printUrl, "_blank")
+
+    if (autoPrint && win) {
+        win.onload = () => {
+            win.print()
+        }
+    }
+}

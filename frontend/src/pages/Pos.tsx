@@ -17,6 +17,7 @@ import { useInvoiceStore } from "@/store/invoiceStore"
 import { useToast } from "@/hooks/use-toast"
 import { CircleCheck } from "lucide-react"
 import type { Customer } from "@/types/customer"
+import { printERPNextDoc } from "@/lib/utils"
 
 export default function Pos() {
   const { loadProfile, profile, openingEntry, loading: posLoading, error: posError } = usePosStore()
@@ -62,7 +63,7 @@ export default function Pos() {
     loadData()
   }, [profile, fetchItems, fetchCategories])
 
-  const handlePaymentSubmit = async (payments: any[], customer?: Customer) => {
+  const completeAndPrint = async (payments: any[], customer?: Customer) => {
     if (!profile) {
       toast({
         title: "Error",
@@ -90,6 +91,10 @@ export default function Pos() {
 
       if (invoice?.name) {
         setDraftInvoice(invoice.name)
+        printERPNextDoc({
+          doctype: "POS Invoice",
+          name: invoice.name
+        })
       }
 
       toast({
@@ -179,7 +184,7 @@ export default function Pos() {
         open={isPaymentOpen}
         onOpenChange={setIsPaymentOpen}
         total={subtotal}
-        onConfirm={handlePaymentSubmit}
+        onConfirm={completeAndPrint}
       />
     </div>
   )
