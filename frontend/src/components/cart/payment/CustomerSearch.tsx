@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Search, User, ChevronDown, Check } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,6 +21,13 @@ export function CustomerSearch({ selectedCustomer, onSelect }: CustomerSearchPro
     const [isAddingCustomer, setIsAddingCustomer] = useState(false)
     const [newCustomerName, setNewCustomerName] = useState("")
     const [isCreating, setIsCreating] = useState(false)
+
+    // Sync mobile number when selectedCustomer changes
+    useEffect(() => {
+        if (selectedCustomer?.mobile_no) {
+            setCustomerMobile(selectedCustomer.mobile_no)
+        }
+    }, [selectedCustomer])
 
     const handleAddCustomer = async () => {
         if (!newCustomerName || !customerMobile) return

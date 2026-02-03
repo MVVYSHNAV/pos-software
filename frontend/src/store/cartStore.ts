@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
+import type { Customer } from "@/types/customer"
 
 interface CartItem {
   item_code: string
@@ -11,6 +12,8 @@ interface CartItem {
 interface Order {
   id: number
   items: CartItem[]
+  customer?: Customer
+  return_against?: string
 }
 
 interface CartState {
@@ -26,6 +29,8 @@ interface CartState {
   newOrder: () => void
   closeOrder: (orderId: number) => void
   selectOrder: (orderId: number) => void
+  loadOrder: (items: CartItem[], customer?: Customer, return_against?: string) => void
+  setCustomer: (customer: Customer | undefined) => void
 
   // Selectors (helper accessors, though typically used in component selectors)
   getActiveOrder: () => Order | undefined
@@ -70,11 +75,21 @@ export const useCartStore = create<CartState>()(
             const idx = items.findIndex(i => i.item_code === itemCode)
 
             if (idx > -1) {
-              if (items[idx].qty > 1) {
-                items[idx] = { ...items[idx], qty: items[idx].qty - 1 }
-              } else {
-                items.splice(idx, 1)
-              }
+              // Allow negative quantity for returns? 
+              // Usually returns work by adding item with negative qty.
+              // If we reduce, we subtract 1.
+              // If we start with negative qty (from loadOrder), reducing makes it MORE negative (e.g. -1 -> -2).
+              // Let's assume standard logic:
+              // If qty > 1, decrement.
+              // If qty = 1, remove.
+              // If qty < 0 (return), maybe we want to "increase" it towards 0 (removes item from return list) or make it more negative?
+              // Standard POS return behavior: You load "Sold Item x 2". You want to return 1. You change qty to -1.
+              // Here we are loading with negative qty. So "Item x -2".
+              // If I want to return only 1, I should change qty to -1.
+              // So "reduceItem" in a return context means "return LESS"? Or "return MORE"?
+              // Let's keep specific logic simple: reduceItem reduces the number (value - 1).
+              // -1 -> -2 (Returning 2 items).
+              items[idx] = { ...items[idx], qty: items[idx].qty - 1 }
             }
             return { ...order, items }
           })
@@ -97,7 +112,7 @@ export const useCartStore = create<CartState>()(
         set(state => {
           const newOrders = state.orders.map(order => {
             if (order.id !== state.activeOrderId) return order
-            return { ...order, items: [] }
+            return { ...order, items: [], customer: undefined, return_against: undefined }
           })
           return { orders: newOrders }
         }),
@@ -115,12 +130,9 @@ export const useCartStore = create<CartState>()(
       closeOrder: (orderId) =>
         set(state => {
           if (state.orders.length <= 1) {
-            // Should not close the last order, maybe just clear it or do nothing?? 
-            // Usually we want at least one order. If closing the last one, maybe reset it?
-            // Let's implement: if 1 order left, clear it, don't remove it.
             if (state.orders.length === 1) {
               return {
-                orders: [{ ...state.orders[0], items: [] }]
+                orders: [{ ...state.orders[0], items: [], customer: undefined, return_against: undefined }]
               }
             }
           }
@@ -129,17 +141,8 @@ export const useCartStore = create<CartState>()(
           let newActiveId = state.activeOrderId
 
           if (state.activeOrderId === orderId) {
-            // We closed the active order, need to switch to another
-            // Try previous, or next.
-            // Simplest: take the last one in the new list, or index 0?
-            // If we close order index 2, we can go to index 1.
-            // If we close index 0, go to index 0 (which was 1).
             const closedIndex = state.orders.findIndex(o => o.id === orderId)
-            // newOrders has the item removed.
-            // If closedIndex was 0, new active is 0 (which was next).
-            // If closedIndex was last, new active is last-1.
             if (newOrders.length > 0) {
-              // Try to keep relative position or go to last
               const nextOrder = newOrders[Math.min(closedIndex, newOrders.length - 1)]
               newActiveId = nextOrder.id
             }
@@ -151,7 +154,25 @@ export const useCartStore = create<CartState>()(
           }
         }),
 
-      selectOrder: (orderId) => set({ activeOrderId: orderId })
+      selectOrder: (orderId) => set({ activeOrderId: orderId }),
+
+      loadOrder: (items, customer, return_against) =>
+        set(state => {
+          const newOrders = state.orders.map(order => {
+            if (order.id !== state.activeOrderId) return order
+            return { ...order, items, customer, return_against }
+          })
+          return { orders: newOrders }
+        }),
+
+      setCustomer: (customer) =>
+        set(state => {
+          const newOrders = state.orders.map(order => {
+            if (order.id !== state.activeOrderId) return order
+            return { ...order, customer }
+          })
+          return { orders: newOrders }
+        }),
     }),
     {
       name: "tridz-pos-cart",

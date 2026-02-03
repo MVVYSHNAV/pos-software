@@ -8,6 +8,7 @@ export interface SalesInvoiceItem {
   warehouse?: string
   uom?: string
   conversion_factor?: number
+  pos_invoice_item?: string // For return invoices - links to original invoice item row
 }
 
 export interface Payment {
