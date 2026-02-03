@@ -396,7 +396,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-3xl w-full p-0 gap-0 bg-white h-auto max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
+            <DialogContent className="max-w-xl md:max-w-3xl w-full p-0 gap-0 bg-white h-auto max-h-[90vh] rounded-none sm:rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
                 <div className="p-4 bg-white shrink-0 border-b border-gray-100">
                     <h2 className="text-lg font-bold">Issue Credit Note</h2>
                     <p className="text-sm text-gray-500">Select a paid invoice to issue credit note</p>
@@ -430,11 +430,12 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                                     </span>
                                                 )}
                                             </div>
-                                            <div className="text-right">
+                                            <div className="text-right flex flex-col items-end gap-1">
+
                                                 <span className="block font-bold text-emerald-500 text-base">
                                                     {formatCurrency(inv.grand_total)}
                                                 </span>
-                                                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">
+                                                <span className="text-sm font-bold text-emerald-500 uppercase tracking-wider px-1.5 py-0.5 rounded w-fit">
                                                     {inv.status}
                                                 </span>
                                             </div>
