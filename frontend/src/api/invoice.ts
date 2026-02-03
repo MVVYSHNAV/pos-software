@@ -63,3 +63,11 @@ export async function getDraftInvoices() {
         }
     })
 }
+
+export async function getInvoice(name: string) {
+    return await db.getDoc(DOCTYPES.POS_INVOICE, name)
+}
+
+export async function deleteInvoice(name: string) {
+    return await db.deleteDoc(DOCTYPES.POS_INVOICE, name)
+}

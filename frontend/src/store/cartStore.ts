@@ -26,6 +26,7 @@ interface CartState {
   newOrder: () => void
   closeOrder: (orderId: number) => void
   selectOrder: (orderId: number) => void
+  loadOrder: (items: CartItem[]) => void
 
   // Selectors (helper accessors, though typically used in component selectors)
   getActiveOrder: () => Order | undefined
@@ -151,7 +152,16 @@ export const useCartStore = create<CartState>()(
           }
         }),
 
-      selectOrder: (orderId) => set({ activeOrderId: orderId })
+      selectOrder: (orderId) => set({ activeOrderId: orderId }),
+
+      loadOrder: (items) =>
+        set(state => {
+          const newOrders = state.orders.map(order => {
+            if (order.id !== state.activeOrderId) return order
+            return { ...order, items }
+          })
+          return { orders: newOrders }
+        }),
     }),
     {
       name: "tridz-pos-cart",

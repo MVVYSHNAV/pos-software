@@ -1,25 +1,32 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FileText, Loader2 } from "lucide-react"
+import { FileText, Loader2, ArrowLeft, Trash2, PlayCircle } from "lucide-react"
 import { useEffect, useState } from "react"
-import { getDraftInvoices, getPaidInvoices } from "@/api/invoice"
+import { getDraftInvoices, getPaidInvoices, getInvoice, deleteInvoice } from "@/api/invoice"
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { useCartStore } from "@/store/cartStore"
+import { useToast } from "@/hooks/use-toast"
 
 interface OrdersDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    onSelect?: (invoice: any) => void
 }
 
-export function OrdersDialog({ open, onOpenChange, onSelect }: OrdersDialogProps) {
+export function OrdersDialog({ open, onOpenChange }: OrdersDialogProps) {
+    const { loadOrder } = useCartStore()
+    const { toast } = useToast()
     const [activeTab, setActiveTab] = useState("drafts")
     const [drafts, setDrafts] = useState<any[]>([])
     const [recent, setRecent] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
+    const [selectedInvoiceInfo, setSelectedInvoiceInfo] = useState<any>(null)
+    const [loadingDetails, setLoadingDetails] = useState(false)
 
     useEffect(() => {
         if (open) {
             loadData()
+            setSelectedInvoiceInfo(null)
         }
     }, [open, activeTab])
 
@@ -40,18 +47,66 @@ export function OrdersDialog({ open, onOpenChange, onSelect }: OrdersDialogProps
         }
     }
 
+    const handleSelectInvoice = async (invoice: any) => {
+        setLoadingDetails(true)
+        try {
+            const data = await getInvoice(invoice.name)
+            setSelectedInvoiceInfo(data)
+        } catch (error) {
+            console.error("Failed to load invoice details", error)
+        } finally {
+            setLoadingDetails(false)
+        }
+    }
+
+    const handleResume = async () => {
+        if (!selectedInvoiceInfo) return
+
+        // Transform items to cart format
+        const cartItems = selectedInvoiceInfo.items.map((item: any) => ({
+            item_code: item.item_code,
+            item_name: item.item_name || item.item_code,
+            qty: item.qty,
+            rate: item.rate
+        }))
+
+        loadOrder(cartItems)
+
+        // Delete the draft after resuming so it doesn't duplicate? 
+        // Or keep it? Standard POS flow usually deletes the draft when loaded to cart to prevent duplicates.
+        // Let's delete it.
+        try {
+            await deleteInvoice(selectedInvoiceInfo.name)
+            toast({ description: "Order resumed successfully" })
+            onOpenChange(false)
+        } catch (error) {
+            console.error("Failed to delete draft", error)
+            toast({ variant: "destructive", description: "Failed to resume order properly" })
+        }
+    }
+
+    const handleDelete = async () => {
+        if (!selectedInvoiceInfo) return
+        if (!confirm("Are you sure you want to delete this invoice?")) return
+
+        try {
+            await deleteInvoice(selectedInvoiceInfo.name)
+            toast({ description: "Invoice deleted successfully" })
+            setSelectedInvoiceInfo(null)
+            loadData() // Refresh list
+        } catch (error) {
+            console.error("Failed to delete invoice", error)
+            toast({ variant: "destructive", description: "Failed to delete invoice" })
+        }
+    }
+
     const InvoiceList = ({ invoices, type }: { invoices: any[], type: "draft" | "recent" }) => (
         <div className="space-y-3">
             {invoices.map((inv) => (
                 <div
                     key={inv.name}
                     className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:border-[#52796F] cursor-pointer transition-all group"
-                    onClick={() => {
-                        onSelect?.(inv)
-                        console.log("Selected", type, inv.name)
-                        // TODO: Resume logic for drafts
-                        onOpenChange(false)
-                    }}
+                    onClick={() => handleSelectInvoice(inv)}
                 >
                     <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
@@ -84,17 +139,76 @@ export function OrdersDialog({ open, onOpenChange, onSelect }: OrdersDialogProps
                         </div>
                     </div>
                 </div>
-            ))
-            }
-            {
-                !loading && invoices.length === 0 && (
-                    <div className="text-center py-10 text-gray-400 text-sm">
-                        No {type} invoices found
-                    </div>
-                )
-            }
-        </div >
+            ))}
+            {!loading && invoices.length === 0 && (
+                <div className="text-center py-10 text-gray-400 text-sm">
+                    No {type} invoices found
+                </div>
+            )}
+        </div>
     )
+
+    if (selectedInvoiceInfo || loadingDetails) {
+        return (
+            <Dialog open={open} onOpenChange={onOpenChange}>
+                <DialogContent className="max-w-xl w-full p-0 gap-0 bg-white h-[80vh] flex flex-col">
+                    {loadingDetails ? (
+                        <div className="flex-1 flex items-center justify-center">
+                            <Loader2 className="h-8 w-8 animate-spin text-[#52796F]" />
+                        </div>
+                    ) : (
+                        <>
+                            <DialogHeader className="p-4 bg-white border-b shrink-0 flex flex-row items-center gap-2 space-y-0">
+                                <Button variant="ghost" size="icon" onClick={() => setSelectedInvoiceInfo(null)} className="h-8 w-8 -ml-2">
+                                    <ArrowLeft className="h-4 w-4" />
+                                </Button>
+                                <DialogTitle className="text-lg font-bold">{selectedInvoiceInfo.name}</DialogTitle>
+                            </DialogHeader>
+
+                            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/50">
+                                <div className="bg-white rounded-lg border p-4 mb-4">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h3 className="font-bold text-lg">{selectedInvoiceInfo.customer}</h3>
+                                            <p className="text-sm text-gray-500">{selectedInvoiceInfo.pos_profile}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="block font-bold text-2xl text-[#52796F]">
+                                                ₹{selectedInvoiceInfo.grand_total?.toFixed(2)}
+                                            </span>
+                                            <span className="text-xs uppercase font-bold text-gray-400">Grand Total</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2 border-t pt-4">
+                                        {selectedInvoiceInfo.items?.map((item: any, idx: number) => (
+                                            <div key={idx} className="flex justify-between text-sm">
+                                                <span>{item.item_name || item.item_code} <span className="text-gray-400">x{item.qty}</span></span>
+                                                <span className="font-medium">₹{(item.qty * item.rate).toFixed(2)}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-4 border-t bg-white flex gap-3">
+                                <Button variant="destructive" className="flex-1 gap-2" onClick={handleDelete}>
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete
+                                </Button>
+                                {selectedInvoiceInfo.docstatus === 0 && (
+                                    <Button className="flex-[2] gap-2 bg-[#52796F] hover:bg-[#43645B]" onClick={handleResume}>
+                                        <PlayCircle className="h-4 w-4" />
+                                        Resume Order
+                                    </Button>
+                                )}
+                            </div>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
+        )
+    }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
