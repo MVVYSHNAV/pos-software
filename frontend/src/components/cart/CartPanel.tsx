@@ -8,7 +8,7 @@ import { PaymentDialog } from "./PaymentDialog"
 import { useToast } from "@/hooks/use-toast"
 import { CircleCheck } from "lucide-react"
 import { useInvoiceStore } from "@/store/invoiceStore"
-import { createDraftPOSInvoice } from "@/api/invoice"
+import { createDraftPOSInvoice, submitInvoice } from "@/api/invoice"
 
 import { OrderTabs } from "./OrderTabs"
 import type { Customer } from "@/types/customer"
@@ -85,6 +85,7 @@ export function CartPanel() {
       })
 
       if (invoice?.name) {
+        await submitInvoice(invoice.name)
         setDraftInvoice(invoice.name)
       }
 
@@ -121,7 +122,7 @@ export function CartPanel() {
     <div className="w-full h-full border-l flex flex-col bg-background shadow-sm">
       <OrderTabs />
 
-      <div className="p-4 lg:p-6 flex flex-col h-full">
+      <div className="flex flex-col h-full p-2">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-emerald-950">
             Current Order
