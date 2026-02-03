@@ -7,16 +7,13 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useUserStore } from "@/store/userStore"
-import { BarChart3, FileText, LogOut, Receipt, User } from "lucide-react"
+import { BarChart3, LogOut, Receipt, User } from "lucide-react"
 import { useState } from "react"
-import { OrdersDialog } from "@/components/orders/OrdersDialog"
 import { CreditNoteDialog } from "@/components/orders/CreditNoteDialog"
 
 export function UserProfile() {
     const { currentUser, logout } = useUserStore()
-    const [showOrders, setShowOrders] = useState(false)
     const [showCreditNote, setShowCreditNote] = useState(false)
-    const [activeOrderTab, setActiveOrderTab] = useState<"drafts" | "recent">("drafts")
 
     // Fallback for user name if not loaded or available
     const userName = currentUser?.full_name || currentUser?.name || "Guest User"
@@ -46,16 +43,6 @@ export function UserProfile() {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         className="cursor-pointer"
-                        onClick={() => {
-                            setActiveOrderTab("drafts")
-                            setShowOrders(true)
-                        }}
-                    >
-                        <FileText className="mr-2 h-4 w-4" />
-                        <span>Invoices</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                        className="cursor-pointer"
                         onClick={() => setShowCreditNote(true)}
                     >
                         <Receipt className="mr-2 h-4 w-4" />
@@ -68,12 +55,6 @@ export function UserProfile() {
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-
-            <OrdersDialog
-                open={showOrders}
-                onOpenChange={setShowOrders}
-                defaultTab={activeOrderTab}
-            />
 
             <CreditNoteDialog
                 open={showCreditNote}

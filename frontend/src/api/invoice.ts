@@ -56,7 +56,8 @@ export async function getPaidInvoices() {
     return await db.getDocList(DOCTYPES.POS_INVOICE, {
         filters: [
             ["docstatus", "=", 1],
-            ["status", "=", "Paid"]
+            ["status", "=", "Paid"],
+            ["is_return", "=", 0] // Exclude return invoices - can't return a return
         ],
         fields: ["name", "customer", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return"],
         orderBy: {

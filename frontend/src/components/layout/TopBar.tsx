@@ -27,7 +27,7 @@ export function TopBar() {
         <div className="bg-[#52796F] rounded-xl md:rounded-lg p-2.5 aspect-square flex items-center justify-center shadow-sm">
           <span className="font-bold text-white text-sm tracking-tighter">TP</span>
         </div>
-        <h2 className="text-[#52796F] text-sm tracking-tighter"> Tridz POS</h2>
+        <h2 className="text-[#52796F] hidden md:block md:font-bold text-sm tracking-tighter"> Tridz POS</h2>
       </div>
 
       <div className="flex-1 max-w-2xl px-1">
