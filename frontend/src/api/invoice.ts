@@ -50,3 +50,16 @@ export async function getPaidInvoices() {
         }
     })
 }
+
+export async function getDraftInvoices() {
+    return await db.getDocList(DOCTYPES.POS_INVOICE, {
+        filters: [
+            ["docstatus", "=", 0]
+        ],
+        fields: ["name", "customer", "posting_date", "posting_time", "grand_total", "status", "currency"],
+        orderBy: {
+            field: "modified",
+            order: "desc"
+        }
+    })
+}
