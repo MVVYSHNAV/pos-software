@@ -26,7 +26,7 @@ export default function Pos() {
   const [isPaymentOpen, setIsPaymentOpen] = useState(false)
   const activeItems = useCartStore(selectActiveItems)
   const subtotal = useCartStore(selectSubtotal)
-  const { clearCart, newOrder, orders, activeOrderId } = useCartStore()
+  const { newOrder, orders, activeOrderId, closeOrder } = useCartStore()
   const setDraftInvoice = useInvoiceStore(s => s.setDraftInvoice)
   const { toast } = useToast()
 
@@ -106,8 +106,15 @@ export default function Pos() {
         )
       })
 
-      clearCart()
-      newOrder()
+
+      // Close the current order tab
+      if (orders.length === 1) {
+        newOrder()
+        closeOrder(activeOrderId)
+      } else {
+        closeOrder(activeOrderId)
+      }
+
       setIsPaymentOpen(false)
 
     } catch (error: any) {
