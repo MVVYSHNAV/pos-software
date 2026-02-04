@@ -7,8 +7,10 @@ interface PosState {
   openingEntry: POSOpeningEntry | null
   loading: boolean
   error: string | null
+  showItemImages: boolean
 
   loadProfile: () => Promise<void>
+  toggleShowItemImages: () => void
 }
 
 export const usePosStore = create<PosState>((set) => ({
@@ -16,6 +18,7 @@ export const usePosStore = create<PosState>((set) => ({
   openingEntry: null,
   loading: false,
   error: null,
+  showItemImages: localStorage.getItem('showItemImages') !== 'false', // Default to true
 
   loadProfile: async () => {
     try {
@@ -40,5 +43,13 @@ export const usePosStore = create<PosState>((set) => ({
         loading: false,
       })
     }
+  },
+
+  toggleShowItemImages: () => {
+    set((state) => {
+      const newValue = !state.showItemImages
+      localStorage.setItem('showItemImages', String(newValue))
+      return { showItemImages: newValue }
+    })
   },
 }))

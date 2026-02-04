@@ -1,7 +1,8 @@
 import { Input } from "@/components/ui/input"
 import { useItemsStore } from "@/store/itemsStore"
-import { ScanLine, Settings } from "lucide-react"
+import { ScanLine } from "lucide-react"
 import { UserProfile } from "./UserProfile"
+import { SettingsDailog } from "./Settings"
 import { useEffect, useState } from "react"
 
 export function TopBar() {
@@ -50,7 +51,7 @@ export function TopBar() {
         </div>
 
         {/* Settings Icon - Restored */}
-        <Settings className="h-6 w-6 text-gray-600 cursor-pointer stroke-[1.5px] hover:text-[#52796F] transition-colors" />
+        <SettingsDailog />
 
         <UserProfile />
       </div>

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import type { Item } from "@/types/item"
 import { useCartStore } from "@/store/cartStore"
+import { usePosStore } from "@/store/posStore"
 import { Plus, Info } from "lucide-react"
 
 interface ItemCardProps {
@@ -9,6 +10,7 @@ interface ItemCardProps {
 
 export function ItemCard({ item }: ItemCardProps) {
   const addItem = useCartStore(state => state.addItem)
+  const showItemImages = usePosStore(state => state.showItemImages)
 
   const handleAddToCart = () => {
     addItem({
@@ -24,19 +26,21 @@ export function ItemCard({ item }: ItemCardProps) {
   return (
     <div className="bg-white rounded-lg overflow-hidden border hover:shadow-md transition-all flex flex-col group">
       {/* Image Container - Fixed Aspect Ratio */}
-      <div className="relative aspect-square w-full bg-gray-100 overflow-hidden">
-        {item.image ? (
-          <img
-            src={item.image}
-            alt={item.item_name}
-            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-gray-400 text-xs">
-            No Image
-          </div>
-        )}
-      </div>
+      {showItemImages && (
+        <div className="relative aspect-square w-full bg-gray-100 overflow-hidden">
+          {item.image ? (
+            <img
+              src={item.image}
+              alt={item.item_name}
+              className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-gray-400 text-xs">
+              No Image
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="p-3 md:p-5 flex flex-col gap-1 md:gap-3 flex-1">
         <h3 className="font-medium text-sm md:text-base text-gray-900 line-clamp-2 min-h-[2.5rem] leading-tight">
