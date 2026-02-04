@@ -1,15 +1,12 @@
 import { useState } from "react"
-import { printERPNextDoc } from "@/lib/utils"
+import { useCheckout } from "@/hooks/useCheckout"
 import { CartSummary } from "./CartSummary"
 import { Button } from "@/components/ui/button"
 import { useCartStore, selectSubtotal, selectActiveItems } from "@/store/cartStore"
-import { usePosStore } from "@/store/posStore"
 import { CartItem } from "./CartItem"
 import { PaymentDialog } from "./PaymentDialog"
 import { useToast } from "@/hooks/use-toast"
 import { CircleCheck } from "lucide-react"
-import { useInvoiceStore } from "@/store/invoiceStore"
-import { createDraftPOSInvoice, submitInvoice } from "@/api/invoice"
 
 import { OrderTabs } from "./OrderTabs"
 import type { Customer } from "@/types/customer"
@@ -25,12 +22,11 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export function CartPanel() {
-  const { addItem, removeItem, reduceItem, newOrder, closeOrder, activeOrderId, orders } = useCartStore()
+  const { addItem, removeItem, reduceItem } = useCartStore()
   const items = useCartStore(selectActiveItems)
   const subtotal = useCartStore(selectSubtotal)
-  const { profile, openingEntry } = usePosStore()
   const { toast } = useToast()
-  const setDraftInvoice = useInvoiceStore(s => s.setDraftInvoice)
+  const { processPayment } = useCheckout()
 
   const [isPaymentOpen, setIsPaymentOpen] = useState(false)
   const [itemToRemove, setItemToRemove] = useState<string | null>(null)
@@ -59,67 +55,10 @@ export function CartPanel() {
     setIsPaymentOpen(true)
   }
 
-  const completeAndPrint = async (payments: any[], customer?: Customer) => {
-    if (!profile) {
-      toast({
-        title: "Error",
-        description: "Session lost or invalid state",
-        variant: "destructive",
-      })
-      return
-    }
-
-    const activeOrder = orders.find(o => o.id === activeOrderId)
-
-    try {
-      // Create draft invoice
-      const invoice = await createDraftPOSInvoice({
-        customer: customer?.name || profile.customer || "Walk In Customer",
-        company: profile.company,
-        pos_profile: profile.name,
-        pos_opening_entry: openingEntry?.name || "",
-        currency: profile.currency,
-        warehouse: profile.warehouse,
-        items: items as any,
-        payments,
-        return_against: activeOrder?.return_against
-      })
-
-      if (invoice?.name) {
-        await submitInvoice(invoice.name)
-        setDraftInvoice(invoice.name)
-        printERPNextDoc({
-          doctype: "POS Invoice",
-          name: invoice.name
-        })
-      }
-
-      toast({
-        description: (
-          <div className="flex items-center gap-2">
-            <CircleCheck className="h-4 w-4 text-green-600" />
-            <span>Order processed successfully</span>
-          </div>
-        ),
-      })
-
-      // Close the current order tab
-      if (orders.length === 1) {
-        newOrder()
-        closeOrder(activeOrderId)
-      } else {
-        closeOrder(activeOrderId)
-      }
-
+  const handlePaymentConfirm = async (payments: any[], customer?: Customer) => {
+    const success = await processPayment(payments, customer)
+    if (success) {
       setIsPaymentOpen(false)
-
-    } catch (error: any) {
-      console.error("Checkout failed:", error)
-      toast({
-        title: "Checkout Failed",
-        description: error.message || "Failed to process order",
-        variant: "destructive",
-      })
     }
   }
 
@@ -178,7 +117,7 @@ export function CartPanel() {
         open={isPaymentOpen}
         onOpenChange={setIsPaymentOpen}
         total={subtotal}
-        onConfirm={completeAndPrint}
+        onConfirm={handlePaymentConfirm}
       />
 
 

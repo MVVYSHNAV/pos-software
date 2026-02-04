@@ -1,0 +1,92 @@
+import { useState } from "react"
+import { usePosStore } from "@/store/posStore"
+import { useCartStore, selectActiveItems } from "@/store/cartStore"
+import { useInvoiceStore } from "@/store/invoiceStore"
+import { createDraftPOSInvoice, submitInvoice } from "@/api/invoice"
+import { printERPNextDoc } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
+import { CircleCheck } from "lucide-react"
+import type { Customer } from "@/types/customer"
+import type { Payment } from "@/types/invoice"
+
+export function useCheckout() {
+    const [isProcessing, setIsProcessing] = useState(false)
+    const { profile, openingEntry } = usePosStore()
+    const { orders, activeOrderId, newOrder, closeOrder } = useCartStore()
+    const activeItems = useCartStore(selectActiveItems)
+    const setDraftInvoice = useInvoiceStore(s => s.setDraftInvoice)
+    const { toast } = useToast()
+
+    const processPayment = async (payments: Payment[], customer?: Customer) => {
+        if (!profile) {
+            toast({
+                title: "Error",
+                description: "Session lost or invalid state",
+                variant: "destructive",
+            })
+            return false
+        }
+
+        setIsProcessing(true)
+        const activeOrder = orders.find(o => o.id === activeOrderId)
+
+        try {
+            // Create draft invoice
+            const invoice = await createDraftPOSInvoice({
+                customer: customer?.name || profile.customer || "Walk In Customer",
+                company: profile.company,
+                pos_profile: profile.name,
+                pos_opening_entry: openingEntry?.name || "",
+                currency: profile.currency,
+                warehouse: profile.warehouse,
+                items: activeItems as any,
+                payments,
+                return_against: activeOrder?.return_against
+            })
+
+            if (invoice?.name) {
+                await submitInvoice(invoice.name)
+                setDraftInvoice(invoice.name)
+                printERPNextDoc({
+                    doctype: "POS Invoice",
+                    name: invoice.name
+                })
+            }
+
+            toast({
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleCheck className="h-4 w-4 text-green-600" />
+                        <span>Order processed successfully</span>
+                    </div>
+                )
+            })
+
+            // Close the current order tab
+            if (orders.length === 1) {
+                newOrder()
+                closeOrder(activeOrderId)
+            } else {
+                closeOrder(activeOrderId)
+            }
+
+            return true
+
+        } catch (error: any) {
+            console.error("Checkout failed:", error)
+            toast({
+                title: "Checkout Failed",
+                description: error.message || "Failed to process order",
+                variant: "destructive",
+            })
+            return false
+        } finally {
+            setIsProcessing(false)
+        }
+    }
+
+    return {
+        processPayment,
+        isProcessing
+    }
+}
