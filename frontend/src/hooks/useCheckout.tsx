@@ -57,7 +57,7 @@ export function useCheckout() {
                 description: (
                     <div className="flex items-center gap-2">
                         <CircleCheck className="h-4 w-4 text-green-600" />
-                        <span>Order processed successfully</span>
+                        <span>Order processed successfully </span>
                     </div>
                 )
             })

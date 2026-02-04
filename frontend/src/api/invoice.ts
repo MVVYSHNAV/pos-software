@@ -79,6 +79,17 @@ export async function getDraftInvoices() {
     })
 }
 
+export async function getAllInvoices() {
+    return await db.getDocList(DOCTYPES.POS_INVOICE, {
+        filters: [],
+        fields: ["name", "customer", "contact_mobile", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return", "total_qty", "docstatus"],
+        orderBy: {
+            field: "modified",
+            order: "desc"
+        }
+    })
+}
+
 export async function getInvoice(name: string) {
     return await db.getDoc(DOCTYPES.POS_INVOICE, name)
 }
