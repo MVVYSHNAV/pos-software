@@ -14,6 +14,7 @@ import { PaymentDialog } from "@/components/cart/PaymentDialog"
 import { useCartStore, selectSubtotal, selectActiveItems } from "@/store/cartStore"
 import type { Customer } from "@/types/customer"
 import { useCheckout } from "@/hooks/useCheckout"
+import { AlertCircle } from "lucide-react"
 
 export default function Pos() {
   const { loadProfile, profile, loading: posLoading, error: posError } = usePosStore()
@@ -25,6 +26,7 @@ export default function Pos() {
 
   const { processPayment } = useCheckout()
 
+  // Initialize POS and user session
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -33,12 +35,13 @@ export default function Pos() {
           initSession()
         ])
       } catch (error) {
-        console.error(" POS initialization failed:", error)
+        console.error("POS initialization failed:", error)
       }
     }
     initialize()
-  }, [loadProfile])
+  }, [loadProfile, initSession])
 
+  // Load items and categories after profile is loaded
   useEffect(() => {
     const loadData = async () => {
       if (profile?.selling_price_list) {
@@ -47,18 +50,18 @@ export default function Pos() {
             fetchItems(profile.selling_price_list),
             fetchCategories(),
           ])
-          console.log(" Items and categories loaded")
+          console.log("Items and categories loaded")
         } catch (error) {
-          console.error(" Failed to load items:", error)
+          console.error("Failed to load items:", error)
         }
       } else {
-        console.log(" Waiting for POS profile...")
+        console.log("Waiting for POS profile...")
       }
     }
     loadData()
   }, [profile, fetchItems, fetchCategories])
 
-
+  // Handle payment confirmation
   const handlePaymentConfirm = async (payments: any[], customer?: Customer) => {
     const success = await processPayment(payments, customer)
     if (success) {
@@ -66,66 +69,79 @@ export default function Pos() {
     }
   }
 
-  // ...
-
+  // Error handling - POS Opening Entry
   if (posError && posError.includes("POS Opening Entry not found")) {
     return <OpeningEntryError error={posError} />
   }
 
+  // Error handling - No POS Profile
   if (posError && posError.includes("No POS Profile found for user")) {
     return <NoPosProfileError error={posError} />
   }
 
+  const totalItemsCount = activeItems.reduce((sum, item) => sum + item.qty, 0)
+
+
   return (
-    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden font-sans text-gray-900">
+    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
+      {/* Top Navigation Bar */}
       <TopBar />
 
       {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Side: Categories & grid */}
-        <div className="flex-1 flex flex-col min-w-0 bg-white mr-[1px]">
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Left Side: Categories & Items Grid */}
+        <div className="flex-1 flex flex-col min-w-0 bg-white">
+          {/* Category Filter Bar */}
           <CategoryBar />
 
-          <div className="flex-1 overflow-y-auto bg-gray-50/30 p-2 md:p-4 pb-28 md:pb-0">
+          {/* Items Grid Container */}
+          <div className="flex-1 overflow-y-auto bg-gray-50/30 pb-20 md:pb-4">
             {/* Error Display */}
             {(posError || itemsError) && (
-              <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 mb-4 rounded">
-                <p className="font-semibold">Error:</p>
-                <p>{posError || itemsError}</p>
+              <div className="mx-3 sm:mx-4 md:mx-6 mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-sm sm:text-base">Error occurred</p>
+                  <p className="text-xs sm:text-sm mt-1">{posError || itemsError}</p>
+                </div>
               </div>
             )}
 
             {/* Loading Display */}
             {(posLoading || itemsLoading) && (
-              <div className="flex items-center justify-center h-64">
-                <p className="text-muted-foreground">Loading POS data...</p>
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="text-center">
+                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#52796F] border-r-transparent mb-3" />
+                  <p className="text-sm sm:text-base text-muted-foreground">Loading POS data...</p>
+                </div>
               </div>
             )}
 
+            {/* Items Grid */}
             {!posLoading && !itemsLoading && <ItemGrid />}
           </div>
         </div>
 
-        {/* Right Side: Cart - Hidden on mobile (< md), shown on desktop (>= md) */}
-        <div className="hidden md:flex w-[380px] shrink-0 bg-white border-l h-full flex-col z-10 transition-all">
-          {/* Note: CartPanel content is self-contained */}
+        {/* Right Side: Cart Panel - Desktop Only */}
+        <aside className="hidden md:flex md:w-[380px] lg:w-[420px] xl:w-[450px] shrink-0 bg-white border-l shadow-sm">
           <CartPanel />
-        </div>
+        </aside>
       </div>
 
-      {/* Mobile-only Fixed Checkout Bar (< md) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t p-4 pb-8 safe-area-bottom">
+      {/* Mobile-only Fixed Checkout Bar (< md) - Original Style */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t p-1 safe-area-bottom">
         <Button
           onClick={() => setIsPaymentOpen(true)}
           disabled={activeItems.length === 0}
-          className="w-full h-14 bg-[#52796F] hover:bg-[#416864] text-white rounded-xl font-bold text-lg flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all disabled:bg-gray-400 disabled:opacity-100"
+          className="w-full h-12 bg-[#52796F] hover:bg-[#416864] text-white rounded-xl font-bold text-md flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all disabled:bg-gray-400 disabled:opacity-100"
         >
-          <span>Checkout ({activeItems.reduce((sum, item) => sum + item.qty, 0)} items)</span>
+          <span>Checkout ({totalItemsCount} items)</span>
           <span className="opacity-60 mx-1">•</span>
           <span>₹{subtotal.toFixed(2)}</span>
         </Button>
       </div>
 
+      {/* Payment Dialog Modal */}
       <PaymentDialog
         open={isPaymentOpen}
         onOpenChange={setIsPaymentOpen}
