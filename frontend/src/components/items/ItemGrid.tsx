@@ -66,7 +66,7 @@ export function ItemGrid() {
   }
 
   return (
-    <div className="p-4 md:p-10">
+    <div className="p-4 md:p-10 mb-0">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
         {items.map((item) => (
           <ItemCard key={item.item_code} item={item} />
@@ -80,9 +80,6 @@ export function ItemGrid() {
             <Loader2 className="h-5 w-5 animate-spin" />
             <span className="text-sm">Loading more items...</span>
           </div>
-        )}
-        {!hasMore && items.length > 0 && (
-          <p className="text-sm text-gray-400">No more items to load</p>
         )}
       </div>
     </div>

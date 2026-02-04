@@ -77,8 +77,8 @@ export function PaymentDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="fixed z-50 flex flex-col w-full h-[100dvh] max-w-none rounded-none border-0 p-0 sm:h-auto sm:max-w-3xl sm:rounded-lg sm:border sm:gap-0 bg-background">
-                <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-2">
+            <DialogContent className="fixed z-50 flex flex-col w-[calc(100%-2rem)] h-[90vh] max-w-3xl rounded-2xl border-0 p-4 sm:p-0 sm:h-auto sm:max-w-3xl sm:border sm:gap-0 bg-background">
+                <div className="flex-1 overflow-y-auto px-2 py-4 sm:p-6 pb-2">
                     <DialogHeader className="mb-4">
                         <div className="flex items-center gap-2">
                             <DialogTitle className="text-xl">Checkout</DialogTitle>
@@ -122,7 +122,7 @@ export function PaymentDialog({
                     />
                 </div>
 
-                <DialogFooter className="p-4 sm:p-6 pt-2 bg-white sm:bg-white border-t sm:border-t-0 mt-auto flex-row gap-3">
+                <DialogFooter className="px-2 py-4 sm:p-6 pt-2 bg-white sm:bg-white border-t sm:border-t-0 mt-auto flex-row gap-3">
                     <Button
                         variant="outline"
                         className="h-12 flex-1 rounded-xl border-gray-200 text-gray-700 hover:bg-gray-50 text-base font-medium"
