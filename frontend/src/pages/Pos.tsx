@@ -12,23 +12,18 @@ import { NoPosProfileError } from "@/components/layout/NoPosProfileError"
 import { Button } from "@/components/ui/button"
 import { PaymentDialog } from "@/components/cart/PaymentDialog"
 import { useCartStore, selectSubtotal, selectActiveItems } from "@/store/cartStore"
-import { createDraftPOSInvoice } from "@/api/invoice"
-import { useInvoiceStore } from "@/store/invoiceStore"
-import { useToast } from "@/hooks/use-toast"
-import { CircleCheck } from "lucide-react"
 import type { Customer } from "@/types/customer"
-import { printERPNextDoc } from "@/lib/utils"
+import { useCheckout } from "@/hooks/useCheckout"
 
 export default function Pos() {
-  const { loadProfile, profile, openingEntry, loading: posLoading, error: posError } = usePosStore()
+  const { loadProfile, profile, loading: posLoading, error: posError } = usePosStore()
   const { fetchItems, fetchCategories, loading: itemsLoading, error: itemsError } = useItemsStore()
   const { initSession } = useUserStore()
   const [isPaymentOpen, setIsPaymentOpen] = useState(false)
   const activeItems = useCartStore(selectActiveItems)
   const subtotal = useCartStore(selectSubtotal)
-  const { newOrder, orders, activeOrderId, closeOrder } = useCartStore()
-  const setDraftInvoice = useInvoiceStore(s => s.setDraftInvoice)
-  const { toast } = useToast()
+
+  const { processPayment } = useCheckout()
 
   useEffect(() => {
     const initialize = async () => {
@@ -63,67 +58,11 @@ export default function Pos() {
     loadData()
   }, [profile, fetchItems, fetchCategories])
 
-  const completeAndPrint = async (payments: any[], customer?: Customer) => {
-    if (!profile) {
-      toast({
-        title: "Error",
-        description: "Session lost or invalid state",
-        variant: "destructive",
-      })
-      return
-    }
 
-    const activeOrder = orders.find(o => o.id === activeOrderId)
-
-    try {
-      // Create draft invoice
-      const invoice = await createDraftPOSInvoice({
-        customer: customer?.name || profile.customer || "Walk In Customer",
-        company: profile.company,
-        pos_profile: profile.name,
-        pos_opening_entry: openingEntry?.name || "",
-        currency: profile.currency,
-        warehouse: profile.warehouse,
-        items: activeItems as any,
-        payments,
-        return_against: activeOrder?.return_against
-      })
-
-      if (invoice?.name) {
-        setDraftInvoice(invoice.name)
-        printERPNextDoc({
-          doctype: "POS Invoice",
-          name: invoice.name
-        })
-      }
-
-      toast({
-        description: (
-          <div className="flex items-center gap-2">
-            <CircleCheck className="h-4 w-4 text-green-600" />
-            <span>Order processed successfully</span>
-          </div>
-        )
-      })
-
-
-      // Close the current order tab
-      if (orders.length === 1) {
-        newOrder()
-        closeOrder(activeOrderId)
-      } else {
-        closeOrder(activeOrderId)
-      }
-
+  const handlePaymentConfirm = async (payments: any[], customer?: Customer) => {
+    const success = await processPayment(payments, customer)
+    if (success) {
       setIsPaymentOpen(false)
-
-    } catch (error: any) {
-      console.error("Checkout failed:", error)
-      toast({
-        title: "Checkout Failed",
-        description: error.message || "Failed to process order",
-        variant: "destructive",
-      })
     }
   }
 
@@ -191,7 +130,7 @@ export default function Pos() {
         open={isPaymentOpen}
         onOpenChange={setIsPaymentOpen}
         total={subtotal}
-        onConfirm={completeAndPrint}
+        onConfirm={handlePaymentConfirm}
       />
     </div>
   )
