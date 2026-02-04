@@ -68,7 +68,7 @@ export function CartPanel() {
 
       <div className="flex flex-col flex-1 p-2 overflow-hidden">
         <div className="mb-4 flex-shrink-0">
-          <h2 className="text-xl font-semibold text-emerald-950">
+          <h2 className="text-xl font-semibold text-foreground">
             Current Order
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -105,7 +105,7 @@ export function CartPanel() {
           <CartSummary />
 
           <Button
-            className="w-full mt-4 h-12 text-base font-medium bg-[#52796F] hover:bg-[#8CA59E] text-white shadow-none rounded-md"
+            className="w-full mt-4 h-12 text-base font-medium bg-primary hover:bg-accent text-primary-foreground shadow-none rounded-md"
             size="lg"
             disabled={items.length === 0}
             onClick={handleCheckout}
@@ -134,7 +134,7 @@ export function CartPanel() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
               onClick={confirmRemoval}
             >
               Remove

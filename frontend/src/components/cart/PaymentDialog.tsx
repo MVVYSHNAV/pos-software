@@ -122,17 +122,17 @@ export function PaymentDialog({
                     />
                 </div>
 
-                <DialogFooter className="px-2 py-4 sm:p-6 pt-2 bg-white sm:bg-white border-t sm:border-t-0 mt-auto flex-row gap-3">
+                <DialogFooter className="px-2 py-4 sm:p-6 pt-2 bg-background sm:bg-background border-t sm:border-t-0 mt-auto flex-row gap-3">
                     <Button
                         variant="outline"
-                        className="h-12 flex-1 rounded-xl border-gray-200 text-gray-700 hover:bg-gray-50 text-base font-medium"
+                        className="h-12 flex-1 rounded-xl border-input text-muted-foreground hover:bg-muted text-base font-medium"
                         onClick={() => onOpenChange(false)}
                         disabled={processing}
                     >
                         Cancel
                     </Button>
                     <Button
-                        className="h-12 flex-1 bg-[#52796F] hover:bg-[#43645B] text-white gap-2 rounded-xl text-base font-medium shadow-sm"
+                        className="h-12 flex-1 bg-primary hover:bg-primary/90 text-primary-foreground gap-2 rounded-xl text-base font-medium shadow-sm"
                         onClick={handleConfirm}
                         disabled={processing || !selectedMode || !activeOrder?.customer}
                     >

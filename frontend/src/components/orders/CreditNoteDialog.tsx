@@ -222,7 +222,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
     if (selectedInvoiceInfo || loadingDetails) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="max-w-3xl w-[calc(100%-2rem)] h-[90vh] sm:h-[90vh] sm:max-h-[90vh] p-4 sm:p-0 gap-0 bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] flex flex-col">
+                <DialogContent className="max-w-3xl w-[calc(100%-2rem)] h-[90vh] sm:h-[90vh] sm:max-h-[90vh] p-4 sm:p-0 gap-0 bg-card rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] flex flex-col">
                     {loadingDetails ? (
                         <div className="flex-1 flex items-center justify-center p-8">
                             <Loader2 className="h-8 w-8 animate-spin text-emerald-800" />
@@ -232,19 +232,19 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                             {/* Header - Fixed */}
                             <div className="px-2 py-4 sm:p-4 shrink-0 flex items-start justify-between">
                                 <div>
-                                    <h2 className="text-xl font-semibold text-gray-900">Issue Credit Note</h2>
-                                    <p className="text-sm text-gray-500 mt-1">Select items and quantities for credit note</p>
+                                    <h2 className="text-xl font-semibold text-foreground">Issue Credit Note</h2>
+                                    <p className="text-sm text-muted-foreground mt-1">Select items and quantities for credit note</p>
                                 </div>
                             </div>
 
                             {/* Invoice Information Card - Fixed */}
                             <div className="px-2 pb-2 sm:px-4 sm:pb-3 shrink-0">
-                                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 sm:p-4">
+                                <div className="bg-muted/30 border border-border rounded-xl p-3 sm:p-4">
                                     <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-2 sm:gap-0">
                                         <div>
-                                            <h3 className="text-sm sm:text-base font-semibold text-gray-900">{selectedInvoiceInfo.name}</h3>
-                                            <p className="text-xs sm:text-sm font-medium text-gray-900 mt-1">{selectedInvoiceInfo.customer}</p>
-                                            <p className="text-xs sm:text-sm text-gray-500">{selectedInvoiceInfo.contact_mobile || selectedInvoiceInfo.mobile_no}</p>
+                                            <h3 className="text-sm sm:text-base font-semibold text-foreground">{selectedInvoiceInfo.name}</h3>
+                                            <p className="text-xs sm:text-sm font-medium text-foreground mt-1">{selectedInvoiceInfo.customer}</p>
+                                            <p className="text-xs sm:text-sm text-muted-foreground">{selectedInvoiceInfo.contact_mobile || selectedInvoiceInfo.mobile_no}</p>
                                         </div>
                                         <div className="self-end sm:self-auto">
                                             <span className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-green-100 text-green-800 text-[10px] sm:text-xs font-semibold rounded-full uppercase">
@@ -253,10 +253,10 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                         </div>
                                     </div>
 
-                                    <div className="border-t border-gray-200 pt-3 mt-3">
+                                    <div className="border-t border-border pt-3 mt-3">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-sm sm:text-base font-medium text-gray-700">Invoice Total:</span>
-                                            <span className="text-base sm:text-lg font-semibold text-gray-900">{formatCurrency(selectedInvoiceInfo.grand_total)}</span>
+                                            <span className="text-sm sm:text-base font-medium text-muted-foreground">Invoice Total:</span>
+                                            <span className="text-base sm:text-lg font-semibold text-foreground">{formatCurrency(selectedInvoiceInfo.grand_total)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -267,17 +267,17 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                             <div className="flex-1 px-2 py-3 sm:px-4 flex flex-col overflow-hidden">
                                 {/* Select Items Section Header */}
                                 <div className="flex items-center justify-between mb-3 shrink-0">
-                                    <h4 className="text-sm lg:text-base font-semibold text-gray-900">Select Items for Credit Note</h4>
+                                    <h4 className="text-sm lg:text-base font-semibold text-foreground">Select Items for Credit Note</h4>
                                     <div className="flex gap-2">
                                         <button
                                             onClick={selectAll}
-                                            className="px-3.5 py-2 border border-gray-300 rounded-lg text-xs lg:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                                            className="px-3.5 py-2 border border-input rounded-lg text-xs lg:text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                                         >
                                             Select All
                                         </button>
                                         <button
                                             onClick={clearAll}
-                                            className="px-3.5 py-2 border border-gray-300 rounded-lg text-xs lg:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                                            className="px-3.5 py-2 border border-input rounded-lg text-xs lg:text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                                         >
                                             Clear
                                         </button>
@@ -285,7 +285,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                 </div>
 
                                 {/* Items List - Only this scrolls */}
-                                <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 border border-gray-300 p-2 rounded-lg">
+                                <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 border border-border p-2 rounded-lg">
                                     {selectedInvoiceInfo.items?.map((item: any) => {
                                         const itemState = selectedItems[item.name]
                                         if (!itemState) return null
@@ -294,8 +294,8 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                             <div
                                                 key={item.name}
                                                 className={`rounded-lg p-2.5 border transition-all ${itemState.selected
-                                                    ? 'bg-[#E6EEE8] border-[#52796F] hover:border-black'
-                                                    : 'bg-white border-gray-300 hover:border-black'
+                                                    ? 'bg-secondary/25 border-primary hover:border-foreground'
+                                                    : 'bg-card border-border hover:border-foreground'
                                                     }`}
                                             >
                                                 <div className="flex items-start gap-3">
@@ -305,36 +305,36 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                                         className="mt-0.5"
                                                     />
                                                     <div className="flex-1">
-                                                        <h5 className="text-sm lg:text-base font-semibold text-gray-900">
+                                                        <h5 className="text-sm lg:text-base font-semibold text-foreground">
                                                             {item.item_name || item.item_code}
                                                         </h5>
-                                                        <p className="text-[13px] text-gray-500">{item.item_code}</p>
-                                                        <p className="text-sm text-gray-700 mt-1">
+                                                        <p className="text-[13px] text-muted-foreground">{item.item_code}</p>
+                                                        <p className="text-sm text-foreground mt-1">
                                                             ₹{item.rate} × {itemState.maxQty} = {formatCurrency(item.rate * itemState.maxQty)}
                                                         </p>
 
                                                         {/* Quantity Controls */}
                                                         <div className="flex items-center gap-2 mt-3">
-                                                            <span className="text-xs lg:text-sm text-gray-700 font-medium">Credit Qty:</span>
+                                                            <span className="text-xs lg:text-sm text-foreground font-medium">Credit Qty:</span>
                                                             <button
                                                                 onClick={() => updateItemQty(item.name, -1)}
                                                                 disabled={!itemState.selected || itemState.qty <= 1}
-                                                                className="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                                className="w-9 h-9 flex items-center justify-center bg-card border border-input rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                                             >
-                                                                <Minus className="h-4 w-4 text-gray-600" />
+                                                                <Minus className="h-4 w-4 text-muted-foreground" />
                                                             </button>
-                                                            <span className="min-w-8 text-center text-xs lg:text-sm font-semibold text-gray-900">
+                                                            <span className="min-w-8 text-center text-xs lg:text-sm font-semibold text-foreground">
                                                                 {itemState.qty}
                                                             </span>
                                                             <button
                                                                 onClick={() => updateItemQty(item.name, 1)}
                                                                 disabled={!itemState.selected || itemState.qty >= itemState.maxQty}
-                                                                className="lg:w-9 lg:h-9 w-6 h-6 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                                className="lg:w-9 lg:h-9 w-6 h-6 flex items-center justify-center bg-card border border-input rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                                             >
-                                                                <Plus className="h-4 w-4 text-gray-600" />
+                                                                <Plus className="h-4 w-4 text-muted-foreground" />
                                                             </button>
-                                                            <span className="text-xs lg:text-sm text-gray-500">/ {itemState.maxQty}</span>
-                                                            <span className="text-sm font-semibold text-gray-900 ml-auto">
+                                                            <span className="text-xs lg:text-sm text-muted-foreground">/ {itemState.maxQty}</span>
+                                                            <span className="text-sm font-semibold text-foreground ml-auto">
                                                                 {formatCurrency(item.rate * itemState.qty)}
                                                             </span>
                                                         </div>
@@ -348,21 +348,21 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
 
                             {/* Credit Note Summary - Fixed */}
                             <div className="px-2 pb-3 sm:px-4 shrink-0">
-                                <div className="bg-[#E6EEE8] border border-[#52796F] rounded-lg p-4">
+                                <div className="bg-secondary/25 border border-primary rounded-lg p-4">
                                     <div className="flex items-center gap-2 mb-3">
-                                        <CreditCard className="h-5 w-5 text-gray-600" />
-                                        <h5 className="text-base font-semibold text-gray-900">Credit Note Summary</h5>
+                                        <CreditCard className="h-5 w-5 text-muted-foreground" />
+                                        <h5 className="text-base font-semibold text-foreground">Credit Note Summary</h5>
                                     </div>
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-sm text-gray-700">Selected items:</span>
-                                            <span className="text-sm font-medium text-gray-900">
+                                            <span className="text-sm text-muted-foreground">Selected items:</span>
+                                            <span className="text-sm font-medium text-foreground">
                                                 {getSelectedItemsCount()} of {getTotalItems()}
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-center">
-                                            <span className="text-sm text-gray-700">Credit amount:</span>
-                                            <span className="text-lg font-bold text-gray-900">
+                                            <span className="text-sm text-muted-foreground">Credit amount:</span>
+                                            <span className="text-lg font-bold text-foreground">
                                                 {formatCurrency(getTotalCreditAmount())}
                                             </span>
                                         </div>
@@ -374,14 +374,14 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                             <div className="px-2 pt-0 pb-2 sm:p-4 sm:pt-0 shrink-0 flex gap-3">
                                 <button
                                     onClick={() => setSelectedInvoiceInfo(null)}
-                                    className="flex-1 px-3.5 py-3.5 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                                    className="flex-1 px-3.5 py-3.5 bg-card border border-input rounded-xl text-sm font-medium text-foreground hover:bg-muted transition-colors"
                                 >
                                     Back
                                 </button>
                                 <button
                                     onClick={handleIssueCreditNote}
                                     disabled={!!selectedInvoiceInfo.hasReturn || getSelectedItemsCount() === 0}
-                                    className="flex-1 px-3.5 py-3.5 bg-[#52796F] text-white rounded-xl text-sm font-medium hover:bg-[#52796F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="flex-1 px-3.5 py-3.5 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
                                     Issue Credit Note
                                 </button>
@@ -396,32 +396,32 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-xl md:max-w-3xl w-[calc(100%-2rem)] p-4 sm:p-0 gap-0 bg-white h-[85vh] max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
-                <div className="px-2 py-4 sm:p-4 bg-white shrink-0 border-b border-gray-100">
+            <DialogContent className="max-w-xl md:max-w-3xl w-[calc(100%-2rem)] p-4 sm:p-0 gap-0 bg-card h-[85vh] max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
+                <div className="px-2 py-4 sm:p-4 bg-card shrink-0 border-b border-border">
                     <h2 className="text-lg font-bold">Issue Credit Note</h2>
-                    <p className="text-sm text-gray-500">Select a paid invoice to issue credit note</p>
+                    <p className="text-sm text-muted-foreground">Select a paid invoice to issue credit note</p>
                 </div>
 
                 {/* Content Container - Fixed frame with internal scroll */}
                 <div className="flex-1 min-h-0 overflow-hidden p-2">
                     {loading ? (
                         <div className="flex justify-center py-8">
-                            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                         </div>
                     ) : (
-                        <div className="h-full border border-gray-300 rounded-lg overflow-hidden flex flex-col">
+                        <div className="h-full border border-border rounded-lg overflow-hidden flex flex-col">
                             {/* Inner Scrollable List */}
                             <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2 space-y-3">
                                 {invoices.map((inv) => (
                                     <div
                                         key={inv.name}
-                                        className="bg-white p-3 rounded-lg border border-gray-200 hover:border-black cursor-pointer transition-all"
+                                        className="bg-card p-3 rounded-lg border border-border hover:border-foreground cursor-pointer transition-all"
                                         onClick={() => handleSelectInvoice(inv)}
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex items-center gap-2">
-                                                <FileText className="h-4 w-4 text-gray-400" />
-                                                <span className="font-semibold text-gray-900 text-md">
+                                                <FileText className="h-4 w-4 text-muted-foreground" />
+                                                <span className="font-semibold text-foreground text-md">
                                                     {inv.name}
                                                 </span>
                                                 {inv.is_return === 1 && (
@@ -441,20 +441,20 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                             </div>
                                         </div>
 
-                                        <div className="text-sm text-gray-500">
+                                        <div className="text-sm text-muted-foreground">
                                             {inv.posting_date}, {inv.posting_time?.substring(0, 5)}
                                         </div>
 
                                         <div>
-                                            <p className="text-lg font-medium text-gray-800">{inv.customer}</p>
+                                            <p className="text-lg font-medium text-foreground">{inv.customer}</p>
                                             {inv.contact_mobile && (
-                                                <p className="text-sm text-gray-500">{inv.contact_mobile}</p>
+                                                <p className="text-sm text-muted-foreground">{inv.contact_mobile}</p>
                                             )}
                                         </div>
 
                                         {inv.total_qty && (
                                             <div className="mt-2 text-left">
-                                                <p className="text-sm text-gray-500 font-medium inline-block px-2 py-1 rounded">
+                                                <p className="text-sm text-muted-foreground font-medium inline-block px-2 py-1 rounded">
                                                     {Math.floor(inv.total_qty)} item{Math.floor(inv.total_qty) !== 1 ? 's' : ''}
                                                 </p>
                                             </div>
@@ -462,7 +462,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                     </div>
                                 ))}
                                 {!loading && invoices.length === 0 && (
-                                    <div className="text-center py-10 text-gray-400 text-sm">
+                                    <div className="text-center py-10 text-muted-foreground text-sm">
                                         No paid invoices found
                                     </div>
                                 )}

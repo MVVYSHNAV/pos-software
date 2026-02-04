@@ -18,7 +18,7 @@ export function CartSummary() {
 
       <div className="flex justify-between font-bold text-lg pt-2 border-t text-emerald-950">
         <span>Grand Total:</span>
-        <span className="text-[#416864]">₹{grandTotal.toFixed(2)}</span>
+        <span className="text-primary">₹{grandTotal.toFixed(2)}</span>
       </div>
     </div>
   )

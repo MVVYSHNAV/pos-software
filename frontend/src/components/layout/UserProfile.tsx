@@ -25,8 +25,8 @@ export function UserProfile() {
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <button className="focus:outline-none w-11 h-11 rounded-full hover:bg-[#52796F] flex items-center justify-center transition-colors group">
-                        <User className="h-6 w-6 text-muted-foreground group-hover:text-white transition-colors" />
+                    <button className="focus:outline-none w-11 h-11 rounded-full hover:bg-primary hover:text-primary-foreground flex items-center justify-center transition-colors group">
+                        <User className="h-6 w-6 text-muted-foreground group-hover:text-primary-foreground transition-colors" />
                     </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>

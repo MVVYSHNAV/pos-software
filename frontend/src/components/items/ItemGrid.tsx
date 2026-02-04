@@ -52,7 +52,7 @@ export function ItemGrid() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
   }
@@ -76,7 +76,7 @@ export function ItemGrid() {
       {/* Intersection observer target */}
       <div ref={observerTarget} className="h-20 flex items-center justify-center">
         {loadingMore && (
-          <div className="flex items-center gap-2 text-gray-500">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin" />
             <span className="text-sm">Loading more items...</span>
           </div>
