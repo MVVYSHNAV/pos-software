@@ -66,8 +66,8 @@ export function CartPanel() {
     <div className="w-full h-full border-l flex flex-col bg-background shadow-sm">
       <OrderTabs />
 
-      <div className="flex flex-col h-full p-2">
-        <div className="mb-6">
+      <div className="flex flex-col flex-1 p-2 overflow-hidden">
+        <div className="mb-4 flex-shrink-0">
           <h2 className="text-xl font-semibold text-emerald-950">
             Current Order
           </h2>
@@ -76,14 +76,14 @@ export function CartPanel() {
           </p>
         </div>
 
-        <div className="flex-1 overflow-y-auto -mx-2 px-2">
+        <div className="flex-1 overflow-y-auto -mx-2 px-2 min-h-0">
           {items.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-muted-foreground text-sm">
               <p className="text-lg">Cart is empty</p>
               <p className="text-sm mt-1">Add items to get started</p>
             </div>
           ) : (
-            <div className="space-y-1">
+            <div className="space-y-1 pb-2">
               {items.map((item) => (
                 <CartItem
                   key={item.item_code}
@@ -101,16 +101,18 @@ export function CartPanel() {
           )}
         </div>
 
-        <CartSummary />
+        <div className="flex-shrink-0 mt-2">
+          <CartSummary />
 
-        <Button
-          className="w-full mt-4 h-12 text-base font-medium bg-[#52796F] hover:bg-[#8CA59E] text-white shadow-none rounded-md"
-          size="lg"
-          disabled={items.length === 0}
-          onClick={handleCheckout}
-        >
-          Checkout
-        </Button>
+          <Button
+            className="w-full mt-4 h-12 text-base font-medium bg-[#52796F] hover:bg-[#8CA59E] text-white shadow-none rounded-md"
+            size="lg"
+            disabled={items.length === 0}
+            onClick={handleCheckout}
+          >
+            Checkout
+          </Button>
+        </div>
       </div>
 
       <PaymentDialog
