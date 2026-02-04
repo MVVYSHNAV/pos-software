@@ -15,8 +15,8 @@ export function SettingsDailog() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="focus:outline-none">
-                    <Settings className="h-6 w-6 text-gray-600 cursor-pointer stroke-[1.5px] hover:text-[#52796F] transition-colors" />
+                <button className="focus:outline-none w-11 h-11 rounded-full hover:bg-[#52796F] hover:text-white flex items-center justify-center transition-colors group">
+                    <Settings className="h-6 w-6 text-muted-foreground group-hover:text-white transition-colors" />
                 </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent

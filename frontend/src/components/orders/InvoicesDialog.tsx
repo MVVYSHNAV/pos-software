@@ -16,7 +16,6 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
     const [loadingDetails, setLoadingDetails] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
-    const [totalInvoices, setTotalInvoices] = useState(0)
     const pageSize = 20
 
     useEffect(() => {
@@ -33,7 +32,6 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
             const data = await getAllInvoices(page, pageSize)
             setInvoices(data.invoices)
             setTotalPages(data.totalPages)
-            setTotalInvoices(data.total)
             setCurrentPage(data.currentPage)
         } catch (error) {
             console.error("Failed to load invoices", error)
@@ -84,7 +82,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
     if (selectedInvoiceInfo || loadingDetails) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="max-w-3xl w-full h-[100dvh] sm:h-[90vh] sm:max-h-[90vh] p-0 gap-0 bg-white rounded-none sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] flex flex-col">
+                <DialogContent className="max-w-3xl w-[calc(100%-2rem)] h-[90vh] sm:h-[90vh] sm:max-h-[90vh] p-4 sm:p-0 gap-0 bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] flex flex-col">
                     {loadingDetails ? (
                         <div className="flex-1 flex items-center justify-center p-8">
                             <Loader2 className="h-8 w-8 animate-spin text-emerald-800" />
@@ -92,7 +90,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                     ) : (
                         <>
                             {/* Header - Fixed */}
-                            <div className="p-4 shrink-0 flex items-start justify-between">
+                            <div className="px-2 py-4 sm:p-4 shrink-0 flex items-start justify-between">
                                 <div>
                                     <h2 className="text-xl font-semibold text-gray-900">Invoice Details</h2>
                                     <p className="text-sm text-gray-500 mt-1">View invoice information and items</p>
@@ -100,7 +98,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                             </div>
 
                             {/* Invoice Information Card - Fixed */}
-                            <div className="px-3 pb-2 sm:px-4 sm:pb-3 shrink-0">
+                            <div className="px-2 pb-2 sm:px-4 sm:pb-3 shrink-0">
                                 <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 sm:p-4">
                                     <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-2 sm:gap-0">
                                         <div>
@@ -140,7 +138,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                             </div>
 
                             {/* Scrollable Items Section */}
-                            <div className="flex-1 px-4 py-3 flex flex-col overflow-hidden">
+                            <div className="flex-1 px-2 py-3 sm:px-4 flex flex-col overflow-hidden">
                                 {/* Items Header */}
                                 <div className="flex items-center justify-between mb-3 shrink-0">
                                     <h4 className="text-sm lg:text-base font-semibold text-gray-900">Invoice Items</h4>
@@ -179,7 +177,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
 
                             {/* Payment Information */}
                             {selectedInvoiceInfo.payments && selectedInvoiceInfo.payments.length > 0 && (
-                                <div className="px-4 pb-3 shrink-0">
+                                <div className="px-2 pb-3 sm:px-4 shrink-0">
                                     <div className="bg-[#E6EEE8] border border-[#52796F] rounded-lg p-4">
                                         <h5 className="text-base font-semibold text-gray-900 mb-3">Payment Information</h5>
                                         <div className="space-y-2">
@@ -205,7 +203,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                             )}
 
                             {/* Footer Buttons - Fixed */}
-                            <div className="p-4 pt-0 shrink-0 flex gap-3">
+                            <div className="px-2 pt-0 pb-2 sm:p-4 sm:pt-0 shrink-0 flex gap-3">
                                 <button
                                     onClick={() => setSelectedInvoiceInfo(null)}
                                     className="flex-1 px-3.5 py-3.5 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
@@ -222,8 +220,8 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-xl md:max-w-3xl w-full p-0 gap-0 bg-white h-[85vh] max-h-[90vh] rounded-none sm:rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
-                <div className="p-4 bg-white shrink-0 border-b border-gray-100">
+            <DialogContent className="max-w-xl md:max-w-3xl w-[calc(100%-2rem)] p-4 sm:p-0 gap-0 bg-white h-[85vh] max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
+                <div className="px-2 py-4 sm:p-4 bg-white shrink-0 border-b border-gray-100">
                     <h2 className="text-lg font-bold">Invoices</h2>
                     <p className="text-sm text-gray-500">View all invoices and their details</p>
                 </div>
@@ -297,10 +295,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                 {/* Pagination Controls */}
                 {!loading && totalPages > 1 && (
                     <div className="p-4 border-t border-gray-200 bg-gray-50 shrink-0">
-                        <div className="flex items-center justify-between">
-                            <div className="text-sm text-gray-600">
-                                Page {currentPage} of {totalPages} ({totalInvoices} total)
-                            </div>
+                        <div className="flex items-center justify-center">
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => handlePageChange(currentPage - 1)}
@@ -329,8 +324,8 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                                                 key={pageNum}
                                                 onClick={() => handlePageChange(pageNum)}
                                                 className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${currentPage === pageNum
-                                                        ? 'bg-emerald-600 text-white'
-                                                        : 'border border-gray-300 bg-white hover:bg-gray-50'
+                                                    ? 'bg-emerald-600 text-white'
+                                                    : 'border border-gray-300 bg-white hover:bg-gray-50'
                                                     }`}
                                             >
                                                 {pageNum}
