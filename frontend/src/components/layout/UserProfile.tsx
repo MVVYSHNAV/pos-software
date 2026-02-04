@@ -10,10 +10,12 @@ import { useUserStore } from "@/store/userStore"
 import { BarChart3, Dock, LogOut, Receipt, User } from "lucide-react"
 import { useState } from "react"
 import { CreditNoteDialog } from "@/components/orders/CreditNoteDialog"
+import { InvoicesDialog } from "@/components/orders/InvoicesDialog"
 
 export function UserProfile() {
     const { currentUser, logout } = useUserStore()
     const [showCreditNote, setShowCreditNote] = useState(false)
+    const [showInvoices, setShowInvoices] = useState(false)
 
     // Fallback for user name if not loaded or available
     const userName = currentUser?.full_name || currentUser?.name || "Guest User"
@@ -41,7 +43,10 @@ export function UserProfile() {
                         <BarChart3 className="mr-2 h-4 w-4" />
                         <span>Reports</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer">
+                    <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => setShowInvoices(true)}
+                    >
                         <Dock className="mr-2 h-4 w-4" />
                         <span>Invoices</span>
                     </DropdownMenuItem>
@@ -63,6 +68,11 @@ export function UserProfile() {
             <CreditNoteDialog
                 open={showCreditNote}
                 onOpenChange={setShowCreditNote}
+            />
+
+            <InvoicesDialog
+                open={showInvoices}
+                onOpenChange={setShowInvoices}
             />
         </>
     )
