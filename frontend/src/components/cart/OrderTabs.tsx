@@ -16,7 +16,7 @@ export function OrderTabs() {
                         className={cn(
                             "px-3 py-4 border-t border-x rounded-t-lg text-sm font-medium border-b-0 -mb-[1px] cursor-pointer flex items-center gap-2 group min-w-[120px] justify-between transition-colors",
                             isActive
-                                ? "bg-background text-emerald-900 border-emerald-600 z-10"
+                                ? "bg-background text-primary border-primary z-10"
                                 : "bg-muted/10 text-muted-foreground border-transparent hover:bg-muted/30"
                         )}
                     >
@@ -38,8 +38,9 @@ export function OrderTabs() {
             })}
 
             <button
-                className="px-3 py-1 text-sm font-medium text-emerald-900 bg-white border border-input rounded-md hover:bg-accent hover:text-accent-foreground flex items-center gap-1 min-w-fit shadow-sm h-9 my-auto"
+                className="px-3 py-1 text-sm font-medium bg-primary text-primary-foreground border border-primary rounded-md hover:bg-accent flex items-center gap-1 min-w-fit shadow-sm h-9 my-auto"
                 onClick={newOrder}
+                data-id="new-order-btn"
             >
                 <Plus className="h-4 w-4" />
                 New Order

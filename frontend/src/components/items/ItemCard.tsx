@@ -28,12 +28,12 @@ export function ItemCard({ item }: ItemCardProps) {
 
   return (
     <div
-      className="bg-white rounded-lg overflow-hidden border hover:shadow-md transition-all flex flex-col group cursor-pointer"
+      className="bg-card rounded-lg overflow-hidden border border-border hover:shadow-md transition-all flex flex-col group cursor-pointer"
       onClick={handleAddToCart}
     >
       {/* Image Container - Fixed Aspect Ratio */}
       {showItemImages && (
-        <div className="relative aspect-square w-full bg-gray-100 overflow-hidden">
+        <div className="relative aspect-square w-full bg-muted overflow-hidden">
           {item.image ? (
             <img
               src={item.image}
@@ -41,7 +41,7 @@ export function ItemCard({ item }: ItemCardProps) {
               className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-gray-400 text-xs">
+            <div className="flex h-full items-center justify-center text-muted-foreground text-xs">
               No Image
             </div>
           )}
@@ -49,17 +49,17 @@ export function ItemCard({ item }: ItemCardProps) {
       )}
 
       <div className="p-3 md:p-4 flex flex-col gap-1 md:gap-2 flex-1">
-        <h3 className="font-medium text-sm md:text-base text-gray-900 line-clamp-2 min-h-[2.5rem] leading-tight">
+        <h3 className="font-medium text-sm md:text-base text-foreground line-clamp-2 min-h-[2.5rem] leading-tight">
           {item.item_name}
         </h3>
 
-        <p className="text-sm md:text-xs text-gray-400 uppercase tracking-[0.2em] font-medium">
+        <p className="text-sm md:text-xs text-muted-foreground uppercase tracking-[0.2em] font-medium">
           {item.item_code}
         </p>
 
         <div className="flex items-center justify-between mt-auto pt-2 md:pt-4">
           <div>
-            <span className="text-lg md:text-xl font-bold text-[#52796F]">
+            <span className="text-lg md:text-xl font-bold text-primary">
               ₹{Math.floor(item.standard_rate ?? 0)}
             </span>
             <div className={`text-sm md:text-xs font-semibold mt-0.5 ${stockColor}`}>
@@ -69,7 +69,7 @@ export function ItemCard({ item }: ItemCardProps) {
 
           <div className="flex flex-col gap-2 items-center">
             <Info
-              className="h-5 w-5 md:h-4 md:w-4 text-gray-400 hover:text-[#52796F] cursor-pointer transition-colors"
+              className="h-5 w-5 md:h-4 md:w-4 text-muted-foreground hover:text-primary cursor-pointer transition-colors"
               onClick={(e) => {
                 e.stopPropagation()
                 setShowInfoDialog(true)
@@ -77,13 +77,13 @@ export function ItemCard({ item }: ItemCardProps) {
             />
             <Button
               size="icon"
-              className="h-10 w-10 md:h-10 md:w-10 rounded-full bg-[#52796F] hover:bg-[#416864] shadow-md transition-all active:scale-90"
+              className="h-10 w-10 md:h-10 md:w-10 rounded-full bg-primary hover:bg-accent shadow-md transition-all active:scale-90"
               onClick={(e) => {
                 e.stopPropagation()
                 handleAddToCart()
               }}
             >
-              <Plus className="h-5 w-5 md:h-5 md:w-5 text-white" />
+              <Plus className="h-5 w-5 md:h-5 md:w-5 text-primary-foreground" />
             </Button>
           </div>
         </div>

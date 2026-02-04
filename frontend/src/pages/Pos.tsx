@@ -83,22 +83,22 @@ export default function Pos() {
 
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       {/* Top Navigation Bar */}
       <TopBar />
 
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden relative">
         {/* Left Side: Categories & Items Grid */}
-        <div className="flex-1 flex flex-col min-w-0 bg-white">
+        <div className="flex-1 flex flex-col min-w-0 bg-background">
           {/* Category Filter Bar */}
           <CategoryBar />
 
           {/* Items Grid Container */}
-          <div className="flex-1 overflow-y-auto bg-gray-50/30 pb-20 md:pb-4">
+          <div className="flex-1 overflow-y-auto bg-muted/10 pb-20 md:pb-4">
             {/* Error Display */}
             {(posError || itemsError) && (
-              <div className="mx-3 sm:mx-4 md:mx-6 mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start gap-3">
+              <div className="mx-3 sm:mx-4 md:mx-6 mt-4 bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold text-sm sm:text-base">Error occurred</p>
@@ -111,7 +111,7 @@ export default function Pos() {
             {(posLoading || itemsLoading) && (
               <div className="flex items-center justify-center min-h-[60vh]">
                 <div className="text-center">
-                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#52796F] border-r-transparent mb-3" />
+                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent mb-3" />
                   <p className="text-sm sm:text-base text-muted-foreground">Loading POS data...</p>
                 </div>
               </div>
@@ -123,17 +123,17 @@ export default function Pos() {
         </div>
 
         {/* Right Side: Cart Panel - Desktop Only */}
-        <aside className="hidden md:flex md:w-[380px] lg:w-[420px] xl:w-[450px] shrink-0 bg-white border-l shadow-sm">
+        <aside className="hidden md:flex md:w-[380px] lg:w-[420px] xl:w-[450px] shrink-0 bg-card border-l shadow-sm">
           <CartPanel />
         </aside>
       </div>
 
       {/* Mobile-only Fixed Checkout Bar (< md) - Original Style */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t p-1 safe-area-bottom">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t p-1 safe-area-bottom">
         <Button
           onClick={() => setIsPaymentOpen(true)}
           disabled={activeItems.length === 0}
-          className="w-full h-12 bg-[#52796F] hover:bg-[#416864] text-white rounded-xl font-bold text-md flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all disabled:bg-gray-400 disabled:opacity-100"
+          className="w-full h-12 bg-primary hover:bg-accent text-primary-foreground rounded-xl font-bold text-md flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all disabled:opacity-50"
         >
           <span>Checkout ({totalItemsCount} items)</span>
           <span className="opacity-60 mx-1">•</span>

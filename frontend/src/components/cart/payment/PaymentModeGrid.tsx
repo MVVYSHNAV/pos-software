@@ -29,7 +29,7 @@ export function PaymentModeGrid({ modes, selectedMode, onSelect }: PaymentModeGr
                         className={cn(
                             "flex flex-col items-center justify-center p-4 border rounded-xl transition-all h-24",
                             selectedMode === p.mode_of_payment
-                                ? "border-[#52796F] bg-[#52796F]/5 text-[#52796F] ring-1 ring-[#52796F]"
+                                ? "border-primary bg-primary/5 text-primary ring-1 ring-primary"
                                 : "border-border hover:bg-muted/50 text-muted-foreground"
                         )}
                     >

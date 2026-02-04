@@ -79,7 +79,7 @@ export function CustomerSearch({ selectedCustomer, onSelect }: CustomerSearchPro
             <div className="relative top-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                    className="pl-9 bg-white h-11 border-[#52796F]/40 border-2 rounded-xl"
+                    className="pl-9 bg-background h-11 border-primary/40 border-2 rounded-xl"
                     placeholder="Enter 10-digit mobile number"
                     value={customerMobile}
                     onFocus={() => {
@@ -103,7 +103,7 @@ export function CustomerSearch({ selectedCustomer, onSelect }: CustomerSearchPro
                 {selectedCustomer && (
                     <div className="absolute left-[45%] top-1/2 -translate-y-1/2 flex items-center h-full pointer-events-none">
                         <div className="h-6 w-px bg-border mx-2" />
-                        <span className="text-sm font-medium text-muted-foreground bg-white/90 px-1 whitespace-nowrap overflow-hidden text-ellipsis max-w-[180px]">
+                        <span className="text-sm font-medium text-muted-foreground bg-background/90 px-1 whitespace-nowrap overflow-hidden text-ellipsis max-w-[180px]">
                             {selectedCustomer.customer_name}
                         </span>
                     </div>
