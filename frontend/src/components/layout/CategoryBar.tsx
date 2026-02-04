@@ -13,8 +13,8 @@ export function CategoryBar() {
         className={cn(
           "rounded-lg px-4 py-1.5 md:px-4 md:py-1.5 h-auto text-sm md:text-sm font-semibold transition-all whitespace-nowrap",
           selectedCategory === "All Items"
-            ? "bg-[#52796F] text-white hover:bg-[#416864]"
-            : "bg-gray-100/80 text-gray-600 hover:bg-gray-200"
+            ? "bg-[#52796F] text-white hover:bg-[#A8BCB7]"
+            : "bg-gray-100/80 text-gray-600 hover:bg-[#A8BCB7]"
         )}
         onClick={() => setCategory("All Items")}
       >
@@ -27,8 +27,8 @@ export function CategoryBar() {
           className={cn(
             "rounded-lg px-4 py-1.5 md:px-4 md:py-1.5 h-auto text-sm md:text-sm font-semibold transition-all whitespace-nowrap",
             cat === selectedCategory
-              ? "bg-[#52796F] text-white hover:bg-[#416864]"
-              : "bg-gray-100/80 text-gray-600 hover:bg-gray-200"
+              ? "bg-[#52796F] text-white hover:bg-[#A8BCB7]"
+              : "bg-gray-100/80 text-gray-600 hover:bg-[#A8BCB7]"
           )}
           onClick={() => setCategory(cat)}
         >
