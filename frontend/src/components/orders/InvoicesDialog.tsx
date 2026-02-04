@@ -14,23 +14,37 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
     const [loading, setLoading] = useState(false)
     const [selectedInvoiceInfo, setSelectedInvoiceInfo] = useState<any>(null)
     const [loadingDetails, setLoadingDetails] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(1)
+    const [totalInvoices, setTotalInvoices] = useState(0)
+    const pageSize = 20
 
     useEffect(() => {
         if (open) {
-            loadInvoices()
+            setCurrentPage(1)
+            loadInvoices(1)
             setSelectedInvoiceInfo(null)
         }
     }, [open])
 
-    const loadInvoices = async () => {
+    const loadInvoices = async (page: number) => {
         setLoading(true)
         try {
-            const data = await getAllInvoices()
-            setInvoices(data)
+            const data = await getAllInvoices(page, pageSize)
+            setInvoices(data.invoices)
+            setTotalPages(data.totalPages)
+            setTotalInvoices(data.total)
+            setCurrentPage(data.currentPage)
         } catch (error) {
             console.error("Failed to load invoices", error)
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            loadInvoices(newPage)
         }
     }
 
@@ -279,6 +293,63 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                         </div>
                     )}
                 </div>
+
+                {/* Pagination Controls */}
+                {!loading && totalPages > 1 && (
+                    <div className="p-4 border-t border-gray-200 bg-gray-50 shrink-0">
+                        <div className="flex items-center justify-between">
+                            <div className="text-sm text-gray-600">
+                                Page {currentPage} of {totalPages} ({totalInvoices} total)
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className="px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    Previous
+                                </button>
+
+                                {/* Page numbers */}
+                                <div className="flex items-center gap-1">
+                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                        let pageNum: number
+                                        if (totalPages <= 5) {
+                                            pageNum = i + 1
+                                        } else if (currentPage <= 3) {
+                                            pageNum = i + 1
+                                        } else if (currentPage >= totalPages - 2) {
+                                            pageNum = totalPages - 4 + i
+                                        } else {
+                                            pageNum = currentPage - 2 + i
+                                        }
+
+                                        return (
+                                            <button
+                                                key={pageNum}
+                                                onClick={() => handlePageChange(pageNum)}
+                                                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${currentPage === pageNum
+                                                        ? 'bg-emerald-600 text-white'
+                                                        : 'border border-gray-300 bg-white hover:bg-gray-50'
+                                                    }`}
+                                            >
+                                                {pageNum}
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+
+                                <button
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    className="px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </DialogContent>
         </Dialog>
     )

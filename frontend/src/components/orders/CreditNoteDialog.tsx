@@ -52,8 +52,8 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
     const loadInvoices = async () => {
         setLoading(true)
         try {
-            const data = await getPaidInvoices()
-            setInvoices(data)
+            const data = await getPaidInvoices(1, 1000) // Get all paid invoices for credit note selection
+            setInvoices(data.invoices)
         } catch (error) {
             console.error("Failed to load invoices", error)
         } finally {

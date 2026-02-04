@@ -8,9 +8,15 @@ interface ItemsState {
     selectedCategory: string
     searchTerm: string
     loading: boolean
+    loadingMore: boolean
     error: string | null
+    offset: number
+    hasMore: boolean
+    totalItems: number
 
     fetchItems: (priceList: string) => Promise<void>
+    loadMoreItems: (priceList: string) => Promise<void>
+    resetItems: () => void
     fetchCategories: () => Promise<void>
     setCategory: (category: string) => void
     setSearchTerm: (term: string) => void
@@ -23,16 +29,50 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
     selectedCategory: "All Items",
     searchTerm: "",
     loading: false,
+    loadingMore: false,
     error: null,
+    offset: 0,
+    hasMore: true,
+    totalItems: 0,
 
     fetchItems: async (priceList: string) => {
         try {
-            set({ loading: true, error: null })
-            const items = await getItems(priceList)
-            set({ items, loading: false })
+            set({ loading: true, error: null, offset: 0, items: [] })
+            const result = await getItems(priceList, 0, 50)
+            set({
+                items: result.items,
+                loading: false,
+                offset: result.items.length,
+                hasMore: result.hasMore,
+                totalItems: result.total
+            })
         } catch (e: any) {
             set({ error: e.message, loading: false })
         }
+    },
+
+    loadMoreItems: async (priceList: string) => {
+        const { loadingMore, hasMore, offset, items } = get()
+
+        if (loadingMore || !hasMore) return
+
+        try {
+            set({ loadingMore: true, error: null })
+            const result = await getItems(priceList, offset, 50)
+            set({
+                items: [...items, ...result.items],
+                loadingMore: false,
+                offset: offset + result.items.length,
+                hasMore: result.hasMore,
+                totalItems: result.total
+            })
+        } catch (e: any) {
+            set({ error: e.message, loadingMore: false })
+        }
+    },
+
+    resetItems: () => {
+        set({ items: [], offset: 0, hasMore: true, totalItems: 0 })
     },
 
     fetchCategories: async () => {
