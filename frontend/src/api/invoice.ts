@@ -52,42 +52,104 @@ export async function createDraftPOSInvoice(data: {
     })
 }
 
-export async function getPaidInvoices() {
-    return await db.getDocList(DOCTYPES.POS_INVOICE, {
-        filters: [
-            ["docstatus", "=", 1],
-            ["is_return", "=", 0] // Exclude return invoices - can't return a return
-        ],
-        fields: ["name", "customer", "contact_mobile", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return", "total_qty"],
-        orderBy: {
-            field: "modified",
-            order: "desc"
-        }
-    })
+export async function getPaidInvoices(page: number = 1, pageSize: number = 20) {
+    const offset = (page - 1) * pageSize
+
+    const [invoices, totalCountResult] = await Promise.all([
+        db.getDocList(DOCTYPES.POS_INVOICE, {
+            filters: [
+                ["docstatus", "=", 1],
+                ["is_return", "=", 0] // Exclude return invoices - can't return a return
+            ],
+            fields: ["name", "customer", "contact_mobile", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return", "total_qty"],
+            orderBy: {
+                field: "modified",
+                order: "desc"
+            },
+            limit: pageSize,
+            limit_start: offset,
+        }),
+        // Get total count
+        db.getDocList(DOCTYPES.POS_INVOICE, {
+            filters: [
+                ["docstatus", "=", 1],
+                ["is_return", "=", 0]
+            ],
+            fields: ["name"],
+            limit: 0,
+        })
+    ])
+
+    return {
+        invoices,
+        total: totalCountResult.length || 0,
+        totalPages: Math.ceil((totalCountResult.length || 0) / pageSize),
+        currentPage: page
+    }
 }
 
-export async function getDraftInvoices() {
-    return await db.getDocList(DOCTYPES.POS_INVOICE, {
-        filters: [
-            ["docstatus", "=", 0]
-        ],
-        fields: ["name", "customer", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return"],
-        orderBy: {
-            field: "modified",
-            order: "desc"
-        }
-    })
+export async function getDraftInvoices(page: number = 1, pageSize: number = 20) {
+    const offset = (page - 1) * pageSize
+
+    const [invoices, totalCountResult] = await Promise.all([
+        db.getDocList(DOCTYPES.POS_INVOICE, {
+            filters: [
+                ["docstatus", "=", 0]
+            ],
+            fields: ["name", "customer", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return"],
+            orderBy: {
+                field: "modified",
+                order: "desc"
+            },
+            limit: pageSize,
+            limit_start: offset,
+        }),
+        // Get total count
+        db.getDocList(DOCTYPES.POS_INVOICE, {
+            filters: [
+                ["docstatus", "=", 0]
+            ],
+            fields: ["name"],
+            limit: 0,
+        })
+    ])
+
+    return {
+        invoices,
+        total: totalCountResult.length || 0,
+        totalPages: Math.ceil((totalCountResult.length || 0) / pageSize),
+        currentPage: page
+    }
 }
 
-export async function getAllInvoices() {
-    return await db.getDocList(DOCTYPES.POS_INVOICE, {
-        filters: [],
-        fields: ["name", "customer", "contact_mobile", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return", "total_qty", "docstatus"],
-        orderBy: {
-            field: "modified",
-            order: "desc"
-        }
-    })
+export async function getAllInvoices(page: number = 1, pageSize: number = 20) {
+    const offset = (page - 1) * pageSize
+
+    const [invoices, totalCountResult] = await Promise.all([
+        db.getDocList(DOCTYPES.POS_INVOICE, {
+            filters: [],
+            fields: ["name", "customer", "contact_mobile", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return", "total_qty", "docstatus"],
+            orderBy: {
+                field: "modified",
+                order: "desc"
+            },
+            limit: pageSize,
+            limit_start: offset,
+        }),
+        // Get total count
+        db.getDocList(DOCTYPES.POS_INVOICE, {
+            filters: [],
+            fields: ["name"],
+            limit: 0,
+        })
+    ])
+
+    return {
+        invoices,
+        total: totalCountResult.length || 0,
+        totalPages: Math.ceil((totalCountResult.length || 0) / pageSize),
+        currentPage: page
+    }
 }
 
 export async function getInvoice(name: string) {
