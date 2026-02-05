@@ -8,7 +8,7 @@ export function OpeningEntryError({ error }: { error: string }) {
     }
 
     return (
-        <div className="h-screen w-full flex flex-col items-center justify-center bg-muted/50 p-6 text-center">
+        <div className="h-screen w-full flex flex-col items-center justify-center bg-background p-6 text-center">
             <div className="max-w-md w-full bg-card rounded-2xl shadow-xl shadow-muted/50 p-8 border border-border animate-in fade-in zoom-in duration-300">
                 <div className="h-16 w-16 bg-orange-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <AlertCircle className="h-8 w-8 text-orange-500" />

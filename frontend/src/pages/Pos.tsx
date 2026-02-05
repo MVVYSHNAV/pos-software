@@ -95,7 +95,7 @@ export default function Pos() {
           <CategoryBar />
 
           {/* Items Grid Container */}
-          <div className="flex-1 overflow-y-auto bg-muted/10 pb-20 md:pb-4">
+          <div className="flex-1 overflow-y-auto bg-background pb-20 md:pb-4">
             {/* Error Display */}
             {(posError || itemsError) && (
               <div className="mx-3 sm:mx-4 md:mx-6 mt-4 bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg flex items-start gap-3">
