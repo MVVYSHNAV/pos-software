@@ -38,3 +38,84 @@ This app can use GitHub Actions for CI. The following workflows are configured:
 ### License
 
 mit
+
+##  Project Overview
+- **App Name:** Tridz POS  
+- **Framework:** Frappe Framework v16  
+- **ERP:** ERPNext v16 (POS module)  
+- **Frontend Route:** `/pos`  
+- **Architecture:** Backend (Frappe) + Custom React Frontend  
+
+Tridz POS is designed for **real-world cashier usage**, optimized for **mobile devices**, touch interaction, and speed.
+
+---
+
+## Core Principles
+- Mobile-first UI
+- Uses **only ERPNext standard doctypes**
+- Uses **Resource APIs (`frappe-js-sdk`) only**
+
+## Tech Stack
+
+### Frontend
+- **React**
+- **TypeScript**
+- **Vite**
+- **Tailwind CSS**
+- **shadcn/ui**
+- **Zustand** (state management)
+- **frappe-js-sdk** (API communication)
+- **Yarn** (package manager)
+### Backend
+- **Frappe Framework v16**
+- **ERPNext v16 POS module**
+
+## Styling
+- Single source of truth: src/index.css
+- Uses CSS variables (HSL) compatible with shadcn
+- Supports Light & Dark mode
+
+## ERPNext Integration
+Tridz POS uses standard ERPNext doctypes, including:
+
+- POS Profile
+- POS Opening Entry
+- POS Invoice
+- Sales Invoice
+- Item
+- Item Price
+- Customer
+- Mode of Payment
+
+## Permissions & Roles
+- Uses existing ERPNext roles only 
+
+## Printing
+- Uses ERPNext print formats (POS Invoice)
+- Frontend triggers print using ERPNext document routes
+
+## Key Features
+- POS Invoice Creation
+- Payment Processing
+- Customer Management
+- Item Management
+- Print Invoices
+- POS Opening/Closing
+
+
+
+3. Run Frappe server:
+```bash
+bench start
+```
+
+4. Open the app:
+```
+http://localhost:3000/pos
+
+## Build
+```
+cd tridz_pos/frontend
+yarn install
+yarn dev
+```
