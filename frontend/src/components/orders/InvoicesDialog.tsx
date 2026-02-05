@@ -15,35 +15,54 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
     const [loading, setLoading] = useState(false)
     const [selectedInvoiceInfo, setSelectedInvoiceInfo] = useState<any>(null)
     const [loadingDetails, setLoadingDetails] = useState(false)
-    const [currentPage, setCurrentPage] = useState(1)
-    const [totalPages, setTotalPages] = useState(1)
-    const pageSize = 20
+
+    // Infinite scroll state
+    const [page, setPage] = useState(1)
+    const [hasMore, setHasMore] = useState(true)
+    const [loadingMore, setLoadingMore] = useState(false)
 
     useEffect(() => {
         if (open) {
-            setCurrentPage(1)
+            setPage(1)
+            setInvoices([])
+            setHasMore(true)
             loadInvoices(1)
             setSelectedInvoiceInfo(null)
         }
     }, [open])
 
-    const loadInvoices = async (page: number) => {
-        setLoading(true)
+    const loadInvoices = async (pageNum: number) => {
+        if (pageNum === 1) {
+            setLoading(true)
+        } else {
+            setLoadingMore(true)
+        }
+
         try {
-            const data = await getAllInvoices(page, pageSize)
-            setInvoices(data.invoices)
-            setTotalPages(data.totalPages)
-            setCurrentPage(data.currentPage)
+            const data = await getAllInvoices(pageNum, 20)
+
+            if (pageNum === 1) {
+                setInvoices(data.invoices)
+            } else {
+                setInvoices(prev => [...prev, ...data.invoices])
+            }
+
+            setHasMore(data.currentPage < data.totalPages)
+            setPage(pageNum)
         } catch (error) {
             console.error("Failed to load invoices", error)
         } finally {
             setLoading(false)
+            setLoadingMore(false)
         }
     }
 
-    const handlePageChange = (newPage: number) => {
-        if (newPage >= 1 && newPage <= totalPages) {
-            loadInvoices(newPage)
+    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
+
+        // Load more when scrolled to bottom (with some buffer)
+        if (scrollHeight - scrollTop <= clientHeight + 50 && hasMore && !loadingMore && !loading) {
+            loadInvoices(page + 1)
         }
     }
 
@@ -110,7 +129,10 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                     ) : (
                         <div className="h-full border border-border rounded-lg overflow-hidden flex flex-col">
                             {/* Inner Scrollable List */}
-                            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2 space-y-3">
+                            <div
+                                className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2 space-y-3"
+                                onScroll={handleScroll}
+                            >
                                 {invoices.map((inv) => {
                                     const statusBadge = getStatusBadge(inv)
                                     return (
@@ -157,6 +179,13 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                                         </div>
                                     )
                                 })}
+
+                                {loadingMore && (
+                                    <div className="flex justify-center py-4">
+                                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                                    </div>
+                                )}
+
                                 {!loading && invoices.length === 0 && (
                                     <div className="text-center py-10 text-muted-foreground text-sm">
                                         No invoices found
@@ -166,60 +195,6 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                         </div>
                     )}
                 </div>
-
-                {/* Pagination Controls */}
-                {!loading && totalPages > 1 && (
-                    <div className="p-4 border-t border-border bg-muted/30 shrink-0">
-                        <div className="flex items-center justify-center">
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    className="px-3 py-1.5 text-sm font-medium rounded-lg border border-input bg-card hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    Previous
-                                </button>
-
-                                {/* Page numbers */}
-                                <div className="flex items-center gap-1">
-                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                        let pageNum: number
-                                        if (totalPages <= 5) {
-                                            pageNum = i + 1
-                                        } else if (currentPage <= 3) {
-                                            pageNum = i + 1
-                                        } else if (currentPage >= totalPages - 2) {
-                                            pageNum = totalPages - 4 + i
-                                        } else {
-                                            pageNum = currentPage - 2 + i
-                                        }
-
-                                        return (
-                                            <div
-                                                key={pageNum}
-                                                onClick={() => handlePageChange(pageNum)}
-                                                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${currentPage === pageNum
-                                                    ? 'bg-primary text-primary-foreground'
-                                                    : 'border border-input bg-card hover:bg-muted'
-                                                    }`}
-                                            >
-                                                {pageNum}
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-
-                                <button
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                    className="px-3 py-1.5 text-sm font-medium rounded-lg border border-input bg-card hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    Next
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </DialogContent>
         </Dialog>
     )
