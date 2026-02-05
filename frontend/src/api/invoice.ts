@@ -52,15 +52,21 @@ export async function createDraftPOSInvoice(data: {
     })
 }
 
-export async function getPaidInvoices(page: number = 1, pageSize: number = 20) {
+export async function getPaidInvoices(page: number = 1, pageSize: number = 20, query: string = "") {
     const offset = (page - 1) * pageSize
+
+    const filters: any[] = [
+        ["docstatus", "=", 1],
+        ["is_return", "=", 0]
+    ]
+
+    if (query) {
+        filters.push(["name", "like", `%${query}%`])
+    }
 
     const [invoices, totalCountResult] = await Promise.all([
         db.getDocList(DOCTYPES.POS_INVOICE, {
-            filters: [
-                ["docstatus", "=", 1],
-                ["is_return", "=", 0] // Exclude return invoices - can't return a return
-            ],
+            filters: filters,
             fields: ["name", "customer", "contact_mobile", "posting_date", "posting_time", "grand_total", "status", "currency", "is_return", "total_qty"],
             orderBy: {
                 field: "modified",
@@ -71,10 +77,7 @@ export async function getPaidInvoices(page: number = 1, pageSize: number = 20) {
         }),
         // Get total count
         db.getDocList(DOCTYPES.POS_INVOICE, {
-            filters: [
-                ["docstatus", "=", 1],
-                ["is_return", "=", 0]
-            ],
+            filters: filters,
             fields: ["name"],
             limit: 0,
         })
