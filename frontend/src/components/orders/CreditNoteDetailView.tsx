@@ -61,7 +61,7 @@ export function CreditNoteDetailView({
 
                         {/* Invoice Information Card - Fixed */}
                         <div className="px-2 pb-2 sm:px-4 sm:pb-3 shrink-0">
-                            <div className="bg-muted/30 border border-border rounded-xl p-3 sm:p-4">
+                            <div className="bg-muted/10 border border-border rounded-xl p-3 sm:p-4">
                                 <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-2 sm:gap-0">
                                     <div>
                                         <h3 className="text-sm sm:text-base font-semibold text-foreground">{selectedInvoiceInfo.name}</h3>
@@ -170,7 +170,7 @@ export function CreditNoteDetailView({
 
                         {/* Credit Note Summary - Fixed */}
                         <div className="px-2 pb-3 sm:px-4 shrink-0">
-                            <div className="bg-secondary/25 border border-primary rounded-lg p-4">
+                            <div className="bg-secondary/20 border border-primary rounded-lg p-4">
                                 <div className="flex items-center gap-2 mb-3">
                                     <CreditCard className="h-5 w-5 text-muted-foreground" />
                                     <h5 className="text-base font-semibold text-foreground">Credit Note Summary</h5>
