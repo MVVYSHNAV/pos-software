@@ -4,7 +4,7 @@ import { FileText, Loader2, Search } from "lucide-react"
 import { InvoiceDetailView } from "./InvoiceDetailView"
 import { useEffect, useState } from "react"
 import { getAllInvoices, getInvoice } from "@/api/invoice"
-import { formatCurrency, filterInvoices } from "@/lib/utils"
+import { formatCurrency } from "@/lib/utils"
 
 interface InvoicesDialogProps {
     open: boolean
@@ -17,6 +17,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
     const [selectedInvoiceInfo, setSelectedInvoiceInfo] = useState<any>(null)
     const [loadingDetails, setLoadingDetails] = useState(false)
     const [searchVal, setSearchVal] = useState("")
+    const [debouncedSearch, setDebouncedSearch] = useState("")
 
     // Infinite scroll state
     const [page, setPage] = useState(1)
@@ -24,16 +25,23 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
     const [loadingMore, setLoadingMore] = useState(false)
 
     useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchVal)
+        }, 500)
+        return () => clearTimeout(timer)
+    }, [searchVal])
+
+    useEffect(() => {
         if (open) {
             setPage(1)
             setInvoices([])
             setHasMore(true)
-            loadInvoices(1)
+            loadInvoices(1, debouncedSearch)
             setSelectedInvoiceInfo(null)
         }
-    }, [open])
+    }, [open, debouncedSearch])
 
-    const loadInvoices = async (pageNum: number) => {
+    const loadInvoices = async (pageNum: number, search: string) => {
         if (pageNum === 1) {
             setLoading(true)
         } else {
@@ -41,7 +49,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
         }
 
         try {
-            const data = await getAllInvoices(pageNum, 20)
+            const data = await getAllInvoices(pageNum, 5, search)
 
             if (pageNum === 1) {
                 setInvoices(data.invoices)
@@ -64,7 +72,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
 
         // Load more when scrolled to bottom (with some buffer)
         if (scrollHeight - scrollTop <= clientHeight + 50 && hasMore && !loadingMore && !loading) {
-            loadInvoices(page + 1)
+            loadInvoices(page + 1, debouncedSearch)
         }
     }
 
@@ -99,8 +107,6 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
             className: 'bg-green-100 text-green-700'
         }
     }
-
-    const filteredInvoices = filterInvoices(invoices, searchVal)
 
     // Detail view with redesigned UI (same as credit note)
     if (selectedInvoiceInfo || loadingDetails) {
@@ -148,7 +154,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                                 className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2 space-y-3"
                                 onScroll={handleScroll}
                             >
-                                {filteredInvoices.map((inv) => {
+                                {invoices.map((inv) => {
                                     const statusBadge = getStatusBadge(inv)
                                     return (
                                         <div
@@ -201,7 +207,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                                     </div>
                                 )}
 
-                                {!loading && filteredInvoices.length === 0 && (
+                                {!loading && invoices.length === 0 && (
                                     <div className="text-center py-10 text-muted-foreground text-sm">
                                         {searchVal ? "No invoices match your search" : "No invoices found"}
                                     </div>

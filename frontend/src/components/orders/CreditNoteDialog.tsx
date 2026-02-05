@@ -5,7 +5,7 @@ import { CreditNoteDetailView, type ItemSelection } from "./CreditNoteDetailView
 import { useEffect, useState } from "react"
 import { getPaidInvoices, getInvoice, createDraftPOSInvoice } from "@/api/invoice"
 import { checkIfInvoiceHasReturn } from "@/api/returnCheck"
-import { formatCurrency, filterInvoices } from "@/lib/utils"
+import { formatCurrency } from "@/lib/utils"
 import { usePosStore } from "@/store/posStore"
 import { useToast } from "@/hooks/use-toast"
 
@@ -21,6 +21,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
     const [loadingDetails, setLoadingDetails] = useState(false)
     const [selectedItems, setSelectedItems] = useState<Record<string, ItemSelection>>({})
     const [searchVal, setSearchVal] = useState("")
+    const [debouncedSearch, setDebouncedSearch] = useState("")
     const { toast } = useToast()
 
     // Pagination state
@@ -29,15 +30,22 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
     const [loadingMore, setLoadingMore] = useState(false)
 
     useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchVal)
+        }, 500)
+        return () => clearTimeout(timer)
+    }, [searchVal])
+
+    useEffect(() => {
         if (open) {
             setPage(1)
             setInvoices([])
             setHasMore(true)
-            loadInvoices(1)
+            loadInvoices(1, debouncedSearch)
             setSelectedInvoiceInfo(null)
             setSelectedItems({})
         }
-    }, [open])
+    }, [open, debouncedSearch])
 
     useEffect(() => {
         if (selectedInvoiceInfo?.items) {
@@ -53,7 +61,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
         }
     }, [selectedInvoiceInfo])
 
-    const loadInvoices = async (pageNum: number) => {
+    const loadInvoices = async (pageNum: number, search: string) => {
         if (pageNum === 1) {
             setLoading(true)
         } else {
@@ -61,7 +69,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
         }
 
         try {
-            const data = await getPaidInvoices(pageNum, 20)
+            const data = await getPaidInvoices(pageNum, 5, search)
 
             if (pageNum === 1) {
                 setInvoices(data.invoices)
@@ -84,14 +92,12 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
         }
     }
 
-    const filteredInvoices = filterInvoices(invoices, searchVal)
-
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
 
         // Load more when scrolled to bottom (with some buffer)
         if (scrollHeight - scrollTop <= clientHeight + 50 && hasMore && !loadingMore && !loading) {
-            loadInvoices(page + 1)
+            loadInvoices(page + 1, debouncedSearch)
         }
     }
 
@@ -240,7 +246,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                 })
                 onOpenChange(false)
                 // Optionally refresh the invoice list
-                loadInvoices(1)
+                loadInvoices(1, debouncedSearch)
             }
         } catch (error: any) {
             console.error("Failed to create credit note:", error)
@@ -306,7 +312,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                 className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2 space-y-3"
                                 onScroll={handleScroll}
                             >
-                                {filteredInvoices.map((inv) => (
+                                {invoices.map((inv) => (
                                     <div
                                         key={inv.name}
                                         className="bg-card p-3 rounded-lg border border-border hover:border-foreground cursor-pointer transition-all"
@@ -362,7 +368,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                     </div>
                                 )}
 
-                                {!loading && filteredInvoices.length === 0 && (
+                                {!loading && invoices.length === 0 && (
                                     <div className="text-center py-10 text-muted-foreground text-sm">
                                         {searchVal ? "No invoices match your search" : "No paid invoices found"}
                                     </div>

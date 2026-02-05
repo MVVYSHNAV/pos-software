@@ -54,14 +54,4 @@ export function printERPNextDoc({
     }
 }
 
-export function filterInvoices(invoices: any[], searchVal: string): any[] {
-    if (!searchVal) return invoices
-    const searchLower = searchVal.toLowerCase()
 
-    return invoices.filter(inv =>
-        inv.customer?.toLowerCase().includes(searchLower) ||
-        inv.contact_mobile?.includes(searchLower) ||
-        inv.status?.toLowerCase().includes(searchLower) ||
-        inv.name?.toLowerCase().includes(searchLower)
-    )
-}
