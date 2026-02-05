@@ -1,5 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { FileText, Loader2 } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { FileText, Loader2, Search } from "lucide-react"
 import { CreditNoteDetailView, type ItemSelection } from "./CreditNoteDetailView"
 import { useEffect, useState } from "react"
 import { getPaidInvoices, getInvoice, createDraftPOSInvoice } from "@/api/invoice"
@@ -19,6 +20,8 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
     const [selectedInvoiceInfo, setSelectedInvoiceInfo] = useState<any>(null)
     const [loadingDetails, setLoadingDetails] = useState(false)
     const [selectedItems, setSelectedItems] = useState<Record<string, ItemSelection>>({})
+    const [searchVal, setSearchVal] = useState("")
+    const [debouncedSearch, setDebouncedSearch] = useState("")
     const { toast } = useToast()
 
     // Pagination state
@@ -27,15 +30,22 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
     const [loadingMore, setLoadingMore] = useState(false)
 
     useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchVal)
+        }, 500)
+        return () => clearTimeout(timer)
+    }, [searchVal])
+
+    useEffect(() => {
         if (open) {
             setPage(1)
             setInvoices([])
             setHasMore(true)
-            loadInvoices(1)
+            loadInvoices(1, debouncedSearch)
             setSelectedInvoiceInfo(null)
             setSelectedItems({})
         }
-    }, [open])
+    }, [open, debouncedSearch])
 
     useEffect(() => {
         if (selectedInvoiceInfo?.items) {
@@ -51,7 +61,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
         }
     }, [selectedInvoiceInfo])
 
-    const loadInvoices = async (pageNum: number) => {
+    const loadInvoices = async (pageNum: number, search: string) => {
         if (pageNum === 1) {
             setLoading(true)
         } else {
@@ -59,7 +69,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
         }
 
         try {
-            const data = await getPaidInvoices(pageNum, 20)
+            const data = await getPaidInvoices(pageNum, 5, search)
 
             if (pageNum === 1) {
                 setInvoices(data.invoices)
@@ -87,7 +97,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
 
         // Load more when scrolled to bottom (with some buffer)
         if (scrollHeight - scrollTop <= clientHeight + 50 && hasMore && !loadingMore && !loading) {
-            loadInvoices(page + 1)
+            loadInvoices(page + 1, debouncedSearch)
         }
     }
 
@@ -236,7 +246,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                 })
                 onOpenChange(false)
                 // Optionally refresh the invoice list
-                loadInvoices(1)
+                loadInvoices(1, debouncedSearch)
             }
         } catch (error: any) {
             console.error("Failed to create credit note:", error)
@@ -273,9 +283,20 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-xl md:max-w-3xl w-[calc(100%-2rem)] p-4 sm:p-0 gap-0 bg-card h-[85vh] max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
-                <div className="px-2 py-4 sm:p-4 bg-card shrink-0 border-b border-border">
-                    <h2 className="text-lg font-bold">Issue Credit Note</h2>
-                    <p className="text-sm text-muted-foreground">Select a paid invoice to issue credit note</p>
+                <div className="px-2 py-4 sm:p-4 bg-card shrink-0 border-b border-border space-y-4">
+                    <div>
+                        <h2 className="text-lg font-bold">Issue Credit Note</h2>
+                        <p className="text-sm text-muted-foreground">Select a paid invoice to issue credit note</p>
+                    </div>
+                    <div className="relative">
+                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search by customer, mobile, or status..."
+                            value={searchVal}
+                            onChange={(e) => setSearchVal(e.target.value)}
+                            className="pl-8"
+                        />
+                    </div>
                 </div>
 
                 {/* Content Container - Fixed frame with internal scroll */}
@@ -349,7 +370,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
 
                                 {!loading && invoices.length === 0 && (
                                     <div className="text-center py-10 text-muted-foreground text-sm">
-                                        No paid invoices found
+                                        {searchVal ? "No invoices match your search" : "No paid invoices found"}
                                     </div>
                                 )}
                             </div>
