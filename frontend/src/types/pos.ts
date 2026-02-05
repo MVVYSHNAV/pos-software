@@ -9,6 +9,9 @@ export interface POSProfile {
     mode_of_payment: string
     default: number
   }[]
+  item_groups: {
+    item_group: string
+  }[]
 }
 
 export interface POSOpeningEntry {
