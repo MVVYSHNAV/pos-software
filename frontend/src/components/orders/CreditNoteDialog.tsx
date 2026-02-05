@@ -1,10 +1,11 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { FileText, Loader2 } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { FileText, Loader2, Search } from "lucide-react"
 import { CreditNoteDetailView, type ItemSelection } from "./CreditNoteDetailView"
 import { useEffect, useState } from "react"
 import { getPaidInvoices, getInvoice, createDraftPOSInvoice } from "@/api/invoice"
 import { checkIfInvoiceHasReturn } from "@/api/returnCheck"
-import { formatCurrency } from "@/lib/utils"
+import { formatCurrency, filterInvoices } from "@/lib/utils"
 import { usePosStore } from "@/store/posStore"
 import { useToast } from "@/hooks/use-toast"
 
@@ -19,6 +20,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
     const [selectedInvoiceInfo, setSelectedInvoiceInfo] = useState<any>(null)
     const [loadingDetails, setLoadingDetails] = useState(false)
     const [selectedItems, setSelectedItems] = useState<Record<string, ItemSelection>>({})
+    const [searchVal, setSearchVal] = useState("")
     const { toast } = useToast()
 
     // Pagination state
@@ -81,6 +83,8 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
             setLoadingMore(false)
         }
     }
+
+    const filteredInvoices = filterInvoices(invoices, searchVal)
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
@@ -273,9 +277,20 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-xl md:max-w-3xl w-[calc(100%-2rem)] p-4 sm:p-0 gap-0 bg-card h-[85vh] max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
-                <div className="px-2 py-4 sm:p-4 bg-card shrink-0 border-b border-border">
-                    <h2 className="text-lg font-bold">Issue Credit Note</h2>
-                    <p className="text-sm text-muted-foreground">Select a paid invoice to issue credit note</p>
+                <div className="px-2 py-4 sm:p-4 bg-card shrink-0 border-b border-border space-y-4">
+                    <div>
+                        <h2 className="text-lg font-bold">Issue Credit Note</h2>
+                        <p className="text-sm text-muted-foreground">Select a paid invoice to issue credit note</p>
+                    </div>
+                    <div className="relative">
+                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search by customer, mobile, or status..."
+                            value={searchVal}
+                            onChange={(e) => setSearchVal(e.target.value)}
+                            className="pl-8"
+                        />
+                    </div>
                 </div>
 
                 {/* Content Container - Fixed frame with internal scroll */}
@@ -291,7 +306,7 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                 className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2 space-y-3"
                                 onScroll={handleScroll}
                             >
-                                {invoices.map((inv) => (
+                                {filteredInvoices.map((inv) => (
                                     <div
                                         key={inv.name}
                                         className="bg-card p-3 rounded-lg border border-border hover:border-foreground cursor-pointer transition-all"
@@ -347,9 +362,9 @@ export function CreditNoteDialog({ open, onOpenChange }: CreditNoteDialogProps) 
                                     </div>
                                 )}
 
-                                {!loading && invoices.length === 0 && (
+                                {!loading && filteredInvoices.length === 0 && (
                                     <div className="text-center py-10 text-muted-foreground text-sm">
-                                        No paid invoices found
+                                        {searchVal ? "No invoices match your search" : "No paid invoices found"}
                                     </div>
                                 )}
                             </div>

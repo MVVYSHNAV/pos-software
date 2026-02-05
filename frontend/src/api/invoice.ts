@@ -91,7 +91,7 @@ export async function getPaidInvoices(page: number = 1, pageSize: number = 20, q
     }
 }
 
-export async function getDraftInvoices(page: number = 1, pageSize: number = 20) {
+export async function getDraftInvoices(page: number = 1, pageSize: number = 5) {
     const offset = (page - 1) * pageSize
 
     const [invoices, totalCountResult] = await Promise.all([
@@ -125,7 +125,7 @@ export async function getDraftInvoices(page: number = 1, pageSize: number = 20) 
     }
 }
 
-export async function getAllInvoices(page: number = 1, pageSize: number = 20) {
+export async function getAllInvoices(page: number = 1, pageSize: number = 5) {
     const offset = (page - 1) * pageSize
 
     const [invoices, totalCountResult] = await Promise.all([

@@ -1,9 +1,10 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { FileText, Loader2 } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { FileText, Loader2, Search } from "lucide-react"
 import { InvoiceDetailView } from "./InvoiceDetailView"
 import { useEffect, useState } from "react"
 import { getAllInvoices, getInvoice } from "@/api/invoice"
-import { formatCurrency } from "@/lib/utils"
+import { formatCurrency, filterInvoices } from "@/lib/utils"
 
 interface InvoicesDialogProps {
     open: boolean
@@ -15,6 +16,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
     const [loading, setLoading] = useState(false)
     const [selectedInvoiceInfo, setSelectedInvoiceInfo] = useState<any>(null)
     const [loadingDetails, setLoadingDetails] = useState(false)
+    const [searchVal, setSearchVal] = useState("")
 
     // Infinite scroll state
     const [page, setPage] = useState(1)
@@ -98,6 +100,8 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
         }
     }
 
+    const filteredInvoices = filterInvoices(invoices, searchVal)
+
     // Detail view with redesigned UI (same as credit note)
     if (selectedInvoiceInfo || loadingDetails) {
         return (
@@ -115,9 +119,20 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-xl md:max-w-3xl w-[calc(100%-2rem)] p-4 sm:p-0 gap-0 bg-card h-[85vh] max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
-                <div className="px-2 py-4 sm:p-4 bg-card shrink-0 border-b border-border">
-                    <h2 className="text-lg font-bold">Invoices</h2>
-                    <p className="text-sm text-muted-foreground">View all invoices and their details</p>
+                <div className="px-2 py-4 sm:p-4 bg-card shrink-0 border-b border-border space-y-4">
+                    <div>
+                        <h2 className="text-lg font-bold">Invoices</h2>
+                        <p className="text-sm text-muted-foreground">View all invoices and their details</p>
+                    </div>
+                    <div className="relative">
+                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search by customer, mobile, or status..."
+                            value={searchVal}
+                            onChange={(e) => setSearchVal(e.target.value)}
+                            className="pl-8"
+                        />
+                    </div>
                 </div>
 
                 {/* Content Container - Fixed frame with internal scroll */}
@@ -133,7 +148,7 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                                 className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2 space-y-3"
                                 onScroll={handleScroll}
                             >
-                                {invoices.map((inv) => {
+                                {filteredInvoices.map((inv) => {
                                     const statusBadge = getStatusBadge(inv)
                                     return (
                                         <div
@@ -186,9 +201,9 @@ export function InvoicesDialog({ open, onOpenChange }: InvoicesDialogProps) {
                                     </div>
                                 )}
 
-                                {!loading && invoices.length === 0 && (
+                                {!loading && filteredInvoices.length === 0 && (
                                     <div className="text-center py-10 text-muted-foreground text-sm">
-                                        No invoices found
+                                        {searchVal ? "No invoices match your search" : "No invoices found"}
                                     </div>
                                 )}
                             </div>
