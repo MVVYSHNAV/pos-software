@@ -6,7 +6,7 @@ export function CategoryBar() {
   const { categories, selectedCategory, setCategory } = useItemsStore()
 
   return (
-    <div className="flex gap-2 px-4 py-3 bg-muted/20 overflow-x-auto border-b border-border hide-scrollbar">
+    <div className="flex gap-2 px-4 py-3 bg-background overflow-x-auto border-b border-border hide-scrollbar">
       <Button
         key="all"
         variant="ghost"
