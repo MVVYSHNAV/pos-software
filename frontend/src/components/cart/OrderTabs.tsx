@@ -1,9 +1,11 @@
-import { Plus, X } from "lucide-react"
+import { Plus, X, CircleCheck } from "lucide-react"
 import { useCartStore } from "@/store/cartStore"
 import { cn } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
 
 export function OrderTabs() {
     const { orders, activeOrderId, newOrder, selectOrder, closeOrder } = useCartStore()
+    const { toast } = useToast()
 
     return (
         <div className="flex gap-2 border-b p-3 bg-muted/20 overflow-x-auto scrollbar-hide">
@@ -39,7 +41,18 @@ export function OrderTabs() {
 
             <button
                 className="px-3 py-1 text-sm font-medium bg-primary text-primary-foreground border border-primary rounded-md hover:bg-accent flex items-center gap-1 min-w-fit shadow-sm h-9 my-auto"
-                onClick={newOrder}
+                onClick={() => {
+                    newOrder()
+                    toast({
+                        description: (
+                            <div className="flex items-center gap-2">
+                                <CircleCheck className="h-4 w-4 text-green-600" />
+                                <span>A new order has been started.</span>
+                            </div>
+                        ),
+                        duration: 1500,
+                    })
+                }}
                 data-id="new-order-btn"
             >
                 <Plus className="h-4 w-4" />
