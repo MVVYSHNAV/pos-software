@@ -5,6 +5,10 @@ export interface POSProfile {
   selling_price_list: string
   warehouse: string
   customer?: string
+  disabled?: number
+  applicable_for_users?: {
+    user: string
+  }[]
   payments: {
     mode_of_payment: string
     default: number
