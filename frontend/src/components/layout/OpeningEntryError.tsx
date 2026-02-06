@@ -1,14 +1,25 @@
 import { AlertCircle, ArrowRight, LayoutDashboard, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useUserStore } from "@/store/userStore"
 
 export function OpeningEntryError({ error }: { error: string }) {
+    const { currentUser } = useUserStore()
     const handleRedirect = () => {
         // Usually Frappe POS Opening Entry is at /app/pos-opening-entry
         window.location.href = "/app/pos-opening-entry/new"
     }
 
+    // Fallback for user name if not loaded or available
+    const userName = currentUser?.full_name || currentUser?.name || "Guest User"
+    const userRole = currentUser?.roles?.[0]?.role || "POS User"
+
     return (
         <div className="h-screen w-full flex flex-col items-center justify-center bg-background p-6 text-center">
+            <div className="absolute top-6 right-6 flex flex-col items-end animate-in fade-in slide-in-from-top-4 duration-500">
+                <p className="text-sm font-semibold text-foreground">{userName}</p>
+                <p className="text-xs text-muted-foreground">{userRole}</p>
+            </div>
+
             <div className="max-w-md w-full bg-card rounded-2xl shadow-xl shadow-muted/50 p-8 border border-border animate-in fade-in zoom-in duration-300">
                 <div className="h-16 w-16 bg-orange-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <AlertCircle className="h-8 w-8 text-orange-500" />
