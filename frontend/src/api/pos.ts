@@ -6,7 +6,6 @@ import type { POSProfile } from "@/types/pos"
  * Get POS Profile assigned to current user
  */
 export async function getPOSProfile(): Promise<POSProfile> {
-  // Get current user from Frappe session
   const currentUserResponse = await call.get("frappe.auth.get_logged_user")
   const currentUser = currentUserResponse?.message || currentUserResponse
 
